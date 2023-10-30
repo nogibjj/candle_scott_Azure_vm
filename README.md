@@ -74,8 +74,9 @@ az identity show --name GitHubVMs --resource-group githubVM --query principalId
 With the principalId you can assign it to the VMs now:
 
 ```
-az role assignment create --assignee 301d22a1-562e-4987-9f77-64d5beae8e8d --role Contributor --resource-group githubVM
+az role assignment create --assignee <principal_ID> --role Contributor --resource-group githubVM
 ```
+
 
 ### Trigger the create image run
 Now you are ready to create the image. Run it manually and make sure it works correctly. If succesful, an image will be created for you which you can query with the following command:
