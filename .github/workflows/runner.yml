@@ -14,7 +14,7 @@ jobs:
         RUNNER_TOKEN=$(curl -f -X POST \
                          -H "Authorization: token ${{ secrets.PAT }}" \
                          -H "Accept: application/vnd.github.v3+json" \
-                         https://api.github.com/repos/alfredodeza/azure-spot-runner/actions/runners/registration-token | grep token | cut -d '"' -f 4)
+                         https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/actions/runners/registration-token | grep token | cut -d '"' -f 4)
         if [ -z "$RUNNER_TOKEN" ]; then
           echo "Failed to retrieve the runner token."
           exit 1
