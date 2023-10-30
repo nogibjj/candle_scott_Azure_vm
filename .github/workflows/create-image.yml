@@ -18,7 +18,7 @@ jobs:
     - name: Build and Distribute Custom VM Image
       uses: azure/build-vm-image@v0
       with:
-        resource-group-name: 'github-vms'
+        resource-group-name: 'githubVM'
         location: 'eastus'
         managed-identity: 'GitHubVMs'
         source-os-type: 'linux'
