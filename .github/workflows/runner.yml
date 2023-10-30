@@ -15,6 +15,7 @@ jobs:
                          -H "Authorization: token ${{ secrets.PAT }}" \
                          -H "Accept: application/vnd.github.v3+json" \
                          https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/actions/runners/registration-token | grep token | cut -d '"' -f 4)
+        echo $RUNNER_TOKEN
         if [ -z "$RUNNER_TOKEN" ]; then
           echo "Failed to retrieve the runner token."
           exit 1
@@ -44,7 +45,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          IMAGE_URI=$(az image list --resource-group github-vms --query "[-1].id" --output tsv)
+          IMAGE_URI=$(az image list --resource-group githubVM --query "[-1].id" --output tsv)
           echo "::set-output name=image_uri::$IMAGE_URI"
 
 
@@ -52,6 +53,6 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          az vm create --resource-group github-vms  --name "app-vm-${{ GITHUB.RUN_NUMBER }}"  --admin-username "runner" --admin-password "${{ secrets.VM_PASSWORD }}" --location  eastus \
+          az vm create --resource-group githubVM  --name "app-vm-${{ GITHUB.RUN_NUMBER }}"  --admin-username "runner" --admin-password "${{ secrets.VM_PASSWORD }}" --location  eastus \
           --custom-data workflow-artifacts/cloud-init.txt \
           --image "${{ steps.find_image.outputs.image_uri }}"
