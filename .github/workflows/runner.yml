@@ -54,4 +54,16 @@ jobs:
           az vm create --resource-group githubVM  --name "app-vm-${{ GITHUB.RUN_NUMBER }}"  --admin-username "runner" --admin-password "${{ secrets.VM_PASSWORD }}" --location  eastus \
           --custom-data workflow-artifacts/cloud-init.txt \
           --image "${{ steps.find_image.outputs.image_uri }}" \
-          --generate-ssh-keys
+          --generate-ssh-keys "${{ secrets.SSH_KEY }}"
+
+    - name: Run Candle Image Task
+      run: |
+        az vm run-command invoke \
+          --resource-group githubVM \
+          --name "app-vm-${{ GITHUB.RUN_NUMBER }}" \
+          --command-id RunShellScript \
+          --scripts "cd myapp/candle && cargo build --example whisper --features cuda --release"
+
+    - name: Deallocate VM
+      run: |
+        az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
