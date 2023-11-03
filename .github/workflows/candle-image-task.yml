@@ -44,13 +44,12 @@ jobs:
                     find / -name cargo 2>/dev/null
                     exit 1
                 fi
-                export PATH=\"\$CARGO_HOME/bin:\$RUSTUP_HOME/toolchains/stable-x86_64-unknown-linux-gnu/bin:\$PATH\"
-                echo \$PATH > /root/.path
-                source /root/.path
-                /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
+                export PATH="$CARGO_HOME/bin:$RUSTUP_HOME/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH"
+                echo $PATH
+                rustc --version || echo 'rustc not found after installation.'
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
-                /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
+                cargo build --example whisper --release || echo 'cargo build failed.';
                 ls" \
           --query "value[].message" --output tsv)
         echo "Command Output:"
