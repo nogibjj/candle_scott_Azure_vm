@@ -32,6 +32,7 @@ tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
 
 # install Rust CLI 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# source "$HOME/.cargo/env"
 
 # Clone candle-core 
 git clone https://github.com/huggingface/candle.git
