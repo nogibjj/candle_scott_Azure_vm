@@ -18,7 +18,7 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
+
     - name: Run Candle Image Task
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
@@ -26,12 +26,12 @@ jobs:
           --resource-group githubVM \
           --name "$VM_NAME" \
           --command-id RunShellScript \
-          --scripts "ls; cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls"
+          --scripts "rustc --version; ls"
           --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
 
-        
+# ls; cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls
     # - name: Deallocate VM
     #   run: |
     #     VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
