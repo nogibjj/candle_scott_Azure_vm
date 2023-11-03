@@ -53,12 +53,35 @@ jobs:
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
-                ls" \
+                ls;
+                cd target/release/examples;
+                ls;
+                " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
     
 
+    - name: Download Whisper Binary
+      env:
+        VM_NAME: ${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}
+        VM_USER: runner # Replace with your VM's user name
+        VM_IP: 172.191.39.190 # Replace with your VM's public IP address
+      run: |
+        # SSH key setup for VM
+        SSH_PRIVATE_KEY=${{ secrets.VM_SSH_PRIVATE_KEY }}
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        
+        # Use SCP to copy the binary from VM to the GitHub runner
+        scp $VM_USER@$VM_IP: /target/release/examples/whisper /binary
+
+    - name: Upload Whisper Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: whisper-binary
+        path: /binary/whisper
 
 
     # cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls
