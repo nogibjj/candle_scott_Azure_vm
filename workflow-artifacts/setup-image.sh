@@ -33,11 +33,13 @@ tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
 # install Rust CLI 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
+# Clone candle-core 
+git clone https://github.com/huggingface/candle.git
+
 # Add Rust and CUDA to PATH for all sessions
 # echo 'export PATH=/usr/local/cuda/bin:$PATH' >> $HOME/.profile
 echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $HOME/.profile
 source $HOME/.profile
 
-# Clone candle-core 
-git clone https://github.com/huggingface/candle.git
+
 # cd candle
