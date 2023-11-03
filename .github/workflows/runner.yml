@@ -54,7 +54,8 @@ jobs:
           az vm create --resource-group githubVM  --name "app-vm-${{ GITHUB.RUN_NUMBER }}"  --admin-username "runner" --admin-password "${{ secrets.VM_PASSWORD }}" --location  eastus \
           --custom-data workflow-artifacts/cloud-init.txt \
           --image "${{ steps.find_image.outputs.image_uri }}" \
-          --generate-ssh-keys "${{ secrets.SSH_KEY }}"
+          --generate-ssh-keys
+
 
     - name: Run Candle Image Task
       run: |
