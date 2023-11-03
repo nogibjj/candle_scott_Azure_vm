@@ -28,20 +28,24 @@ jobs:
           --command-id RunShellScript \
           --scripts "
                 set -e
-                CARGO_HOME='/home/ubuntu/.cargo'
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
-                export PATH=\"\$CARGO_HOME/bin:\$PATH\";
-                echo \"PATH: \$PATH\"
-                ls -alh \"\$CARGO_HOME/bin\"
-                if [ -f \"\$CARGO_HOME/env\" ]; then
-                    . \"\$CARGO_HOME/env\";
+                echo 'Checking installation...'
+                CARGO_HOME=\"\$HOME/.cargo\"
+                if [ -d \"\$CARGO_HOME/bin\" ]; then
+                    echo '.cargo/bin directory exists.'
+                    ls -alh \"\$CARGO_HOME/bin\"
+                else
+                    echo '.cargo/bin directory NOT found.'
+                    exit 1
                 fi
-                echo \"After sourcing env, PATH: \$PATH\"
-                \"$CARGO_HOME/bin/rustc\" --version || echo 'rustc not found in expected directory';
+                PATH=\"\$CARGO_HOME/bin:\$PATH\"
+                echo \$PATH > \$HOME/.path
+                source \$HOME/.path
+                rustc --version || echo 'rustc not found after installation.'
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
-                \"$CARGO_HOME/bin/cargo\" build --example whisper --release || echo 'cargo not found in expected directory';
-                 ls" \
+                cargo build --example whisper --release || echo 'cargo build failed.';
+                ls" \
           --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
