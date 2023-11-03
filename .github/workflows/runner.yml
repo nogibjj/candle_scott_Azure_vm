@@ -63,10 +63,8 @@ jobs:
           --resource-group githubVM \
           --name "app-vm-${{ GITHUB.RUN_NUMBER }}" \
           --command-id RunShellScript \
-          --scripts "cargo build --example whisper --release"
-          --scripts "ls"
-          --scripts "cd target/release/examples"
-          --scripts "ls"
+          --scripts "cargo build --example whisper --release; ls; cd target/release/examples; ls"
+        
 
     # - name: Deallocate VM
     #   run: |
