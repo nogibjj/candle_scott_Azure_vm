@@ -29,8 +29,7 @@ jobs:
           --scripts "
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; 
                 source "$HOME/.cargo/env"; 
-                echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $HOME/.profile;
-                source $HOME/.profile;
+                export PATH=\$HOME/.cargo/bin:\$PATH;
                 git clone https://github.com/huggingface/candle.git;
                 ls;
                 rustc --version; 
