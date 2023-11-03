@@ -1,0 +1,32 @@
+name: Candle Image Task
+
+on:
+  repository_dispatch:
+    types: [candle-image-task]
+  workflow_dispatch:
+    inputs:
+      vm_name:
+        description: 'Name of the VM to run tasks on'
+        required: true
+
+jobs:
+  run-candle-image-task:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Candle Image Task
+      run: |
+        VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
+        az vm run-command invoke \
+          --resource-group githubVM \
+          --name "$VM_NAME" \
+          --command-id RunShellScript \
+          --scripts "ls; cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls"
+          --query "value[].message" --output tsv)
+        echo "Command Output:"
+        echo "$OUTPUT"
+
+        
+    # - name: Deallocate VM
+    #   run: |
+    #     VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
+    #     az vm deallocate --resource-group githubVM --name "$VM_NAME"

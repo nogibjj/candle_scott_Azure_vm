@@ -47,25 +47,40 @@ jobs:
           echo "::set-output name=image_uri::$IMAGE_URI"
 
 
-    # - name: CREATE VM
-    #   uses: azure/CLI@v1
+    - name: CREATE VM
+      id: create_vm
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az vm create --resource-group githubVM  --name "app-vm-${{ GITHUB.RUN_NUMBER }}"  --admin-username "runner" --admin-password "${{ secrets.VM_PASSWORD }}" --location  eastus \
+          --custom-data workflow-artifacts/cloud-init.txt \
+          --image "${{ steps.find_image.outputs.image_uri }}" \
+          --generate-ssh-keys
+
+    # At the end of your CREATE VM step
+    - name: Set VM Name Output
+      run: echo "::set-output name=vm_name::app-vm-${{ GITHUB.RUN_NUMBER }}"
+      id: vm_name
+
+
+
+    # - name: Trigger Candle Image Task Workflow
+    #   uses: peter-evans/repository-dispatch@v1
     #   with:
-    #     inlineScript: |
-    #       az vm create --resource-group githubVM  --name "app-vm-${{ GITHUB.RUN_NUMBER }}"  --admin-username "runner" --admin-password "${{ secrets.VM_PASSWORD }}" --location  eastus \
-    #       --custom-data workflow-artifacts/cloud-init.txt \
-    #       --image "${{ steps.find_image.outputs.image_uri }}" \
-    #       --generate-ssh-keys
+    #     token: ${{ secrets.PAT }}
+    #     repository: owner/repo # Replace with your repository
+    #     event-type: candle-image-task
+    #     client-payload: '{"vm_name": "app-vm-${{ GITHUB.RUN_NUMBER }}"}'
 
-
-    - name: Run Candle Image Task
-      run: |
-        az vm run-command invoke \
-          --resource-group githubVM \
-          --name "app-vm-${{ GITHUB.RUN_NUMBER }}" \
-          --command-id RunShellScript \
-          --scripts "ls; cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls"
+    # - name: Run Candle Image Task
+    #   run: |
+    #     az vm run-command invoke \
+    #       --resource-group githubVM \
+    #       --name "app-vm-${{ GITHUB.RUN_NUMBER }}" \
+    #       --command-id RunShellScript \
+    #       --scripts "ls; cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls"
         
 
-    - name: Deallocate VM
-      run: |
-        az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
+    # - name: Deallocate VM
+    #   run: |
+    #     az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
