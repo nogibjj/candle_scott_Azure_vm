@@ -26,7 +26,7 @@ jobs:
           --resource-group githubVM \
           --name "$VM_NAME" \
           --command-id RunShellScript \
-          --scripts "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; source "$HOME/.cargo/env"; git clone https://github.com/huggingface/candle.git; rustc --version; ls" \
+          --scripts "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; source "$HOME/.cargo/env"; git clone https://github.com/huggingface/candle.git; rustc --version; ls; cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls" \
           --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
