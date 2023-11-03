@@ -31,7 +31,7 @@ jobs:
                 set -e
                 # Install C compiler and related tools
                 apt-get update
-                apt-get install -y build-essential pkg-config
+                apt-get install -y build-essential pkg-config libssl-dev
                 # Now install Rust
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
                 echo 'Checking installation...'
