@@ -75,7 +75,7 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         
         # Use SCP to copy the binary from VM to the GitHub runner
-        scp $VM_USER@$VM_IP: /target/release/examples/whisper /binary
+        scp $VM_USER@$VM_IP: /candle/target/release/examples/whisper /binary
 
     - name: Upload Whisper Binary
       uses: actions/upload-artifact@v2
