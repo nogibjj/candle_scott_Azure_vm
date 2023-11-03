@@ -29,13 +29,20 @@ jobs:
           --scripts "
                 set -e
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
-                echo 'Checking installation...'
+                echo 'Checking installation...';
+                echo \"Environment variables:\";
+                echo \"HOME: \$HOME\";
+                echo \"USER: \$USER\";
+                echo \"PATH: \$PATH\";
                 CARGO_HOME=\"\$HOME/.cargo\"
                 if [ -d \"\$CARGO_HOME/bin\" ]; then
                     echo '.cargo/bin directory exists.'
                     ls -alh \"\$CARGO_HOME/bin\"
                 else
                     echo '.cargo/bin directory NOT found.'
+                    echo 'Searching for rustc and cargo...'
+                    find / -name rustc 2>/dev/null
+                    find / -name cargo 2>/dev/null
                     exit 1
                 fi
                 PATH=\"\$CARGO_HOME/bin:\$PATH\"
