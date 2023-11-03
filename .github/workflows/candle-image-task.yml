@@ -27,20 +27,11 @@ jobs:
           --name "$VM_NAME" \
           --command-id RunShellScript \
           --scripts "
-                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; 
-                source "$HOME/.cargo/env"; 
+                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
                 export PATH=\$HOME/.cargo/bin:\$PATH;
                 git clone https://github.com/huggingface/candle.git;
-                ls;
-                rustc --version; 
-                ls; 
                 cd candle;
-                cargo new myapp; 
-                cd myapp; 
-                ls; 
-                cargo build --example whisper --release; 
-                ls; 
-                cd target/release/examples; 
+                cargo build --example whisper --release;
                 ls" \
           --query "value[].message" --output tsv)
         echo "Command Output:"
