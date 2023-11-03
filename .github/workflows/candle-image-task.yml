@@ -27,6 +27,7 @@ jobs:
             --name "$VM_NAME" \
             --command-id RunShellScript \
             --scripts "
+                #!/bin/bash
                 set -e
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
                 echo 'Checking installation...'
@@ -39,17 +40,15 @@ jobs:
                     ls -alh \"\$CARGO_HOME/bin\"
                 else
                     echo '.cargo/bin directory NOT found.'
-                    echo 'Searching for rustc and cargo...'
-                    find / -name rustc 2>/dev/null
-                    find / -name cargo 2>/dev/null
                     exit 1
                 fi
-                source \$CARGO_HOME/env
+                # Using the bash shell to source the environment variables
+                /bin/bash -c \"source \$CARGO_HOME/env\"
                 echo \$PATH
-                rustc --version || echo 'rustc not found after installation.'
+                /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
-                cargo build --example whisper --release || echo 'cargo build failed.';
+                /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 ls" \
             --query "value[].message" --output tsv)
         echo "Command Output:"
