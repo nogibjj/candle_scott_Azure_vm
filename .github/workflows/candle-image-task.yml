@@ -28,7 +28,9 @@ jobs:
           --command-id RunShellScript \
           --scripts "
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
-                export PATH=\$HOME/.cargo/bin:\$PATH;
+                export PATH=/home/ubuntu/.cargo/bin:$PATH;
+                . "/home/ubuntu/.cargo/env";
+                rustc --version;
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
                 cargo build --example whisper --release;
