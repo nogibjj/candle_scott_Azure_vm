@@ -13,6 +13,12 @@ jobs:
   run-candle-image-task:
     runs-on: ubuntu-latest
     steps:
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
     - name: Run Candle Image Task
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
