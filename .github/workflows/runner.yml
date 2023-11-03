@@ -66,6 +66,6 @@ jobs:
           --scripts "cargo build --example whisper --release; ls; cd target/release/examples; ls"
         
 
-    # - name: Deallocate VM
-    #   run: |
-    #     az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
+    - name: Deallocate VM
+      run: |
+        az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
