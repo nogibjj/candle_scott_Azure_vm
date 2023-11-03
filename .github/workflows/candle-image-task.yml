@@ -23,10 +23,10 @@ jobs:
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
         OUTPUT=$(az vm run-command invoke \
-          --resource-group githubVM \
-          --name "$VM_NAME" \
-          --command-id RunShellScript \
-          --scripts "
+            --resource-group githubVM \
+            --name "$VM_NAME" \
+            --command-id RunShellScript \
+            --scripts "
                 set -e
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
                 echo 'Checking installation...'
@@ -44,16 +44,17 @@ jobs:
                     find / -name cargo 2>/dev/null
                     exit 1
                 fi
-                export PATH="$CARGO_HOME/bin:$RUSTUP_HOME/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH"
-                echo $PATH
+                source \$CARGO_HOME/env
+                echo \$PATH
                 rustc --version || echo 'rustc not found after installation.'
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
                 cargo build --example whisper --release || echo 'cargo build failed.';
                 ls" \
-          --query "value[].message" --output tsv)
+            --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
+    
 
 
 
