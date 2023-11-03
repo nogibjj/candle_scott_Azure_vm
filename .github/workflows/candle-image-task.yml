@@ -29,12 +29,11 @@ jobs:
           --scripts "
                 set -e
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
-                echo 'Checking installation...';
-                echo \"Environment variables:\";
-                echo \"HOME: \$HOME\";
-                echo \"USER: \$USER\";
-                echo \"PATH: \$PATH\";
-                CARGO_HOME=\"\$HOME/.cargo\"
+                echo 'Checking installation...'
+                CARGO_HOME='/root/.cargo'
+                RUSTUP_HOME='/root/.rustup'
+                echo \"CARGO_HOME: \$CARGO_HOME\";
+                echo \"RUSTUP_HOME: \$RUSTUP_HOME\";
                 if [ -d \"\$CARGO_HOME/bin\" ]; then
                     echo '.cargo/bin directory exists.'
                     ls -alh \"\$CARGO_HOME/bin\"
@@ -45,13 +44,13 @@ jobs:
                     find / -name cargo 2>/dev/null
                     exit 1
                 fi
-                PATH=\"\$CARGO_HOME/bin:\$PATH\"
-                echo \$PATH > \$HOME/.path
-                source \$HOME/.path
-                rustc --version || echo 'rustc not found after installation.'
+                export PATH=\"\$CARGO_HOME/bin:\$RUSTUP_HOME/toolchains/stable-x86_64-unknown-linux-gnu/bin:\$PATH\"
+                echo \$PATH > /root/.path
+                source /root/.path
+                /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
-                cargo build --example whisper --release || echo 'cargo build failed.';
+                /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 ls" \
           --query "value[].message" --output tsv)
         echo "Command Output:"
