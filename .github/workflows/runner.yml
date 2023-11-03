@@ -62,8 +62,11 @@ jobs:
           --resource-group githubVM \
           --name "app-vm-${{ GITHUB.RUN_NUMBER }}" \
           --command-id RunShellScript \
-          --scripts "cd myapp/candle && cargo build --example whisper --features cuda --release"
+          --scripts "candle && cargo build --example whisper --release"
+          --scripts "ls"
+          --scripts "cd target/release/examples"
+          --scripts "ls"
 
-    - name: Deallocate VM
-      run: |
-        az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
+    # - name: Deallocate VM
+    #   run: |
+    #     az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
