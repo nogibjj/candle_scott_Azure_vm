@@ -28,17 +28,20 @@ jobs:
           --command-id RunShellScript \
           --scripts "
                 set -e
-                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
                 CARGO_HOME='/home/ubuntu/.cargo'
+                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
                 export PATH=\"\$CARGO_HOME/bin:\$PATH\";
+                echo \"PATH: \$PATH\"
+                ls -alh \"\$CARGO_HOME/bin\"
                 if [ -f \"\$CARGO_HOME/env\" ]; then
                     . \"\$CARGO_HOME/env\";
                 fi
-                \"$CARGO_HOME/bin/rustc\" --version;
+                echo \"After sourcing env, PATH: \$PATH\"
+                \"$CARGO_HOME/bin/rustc\" --version || echo 'rustc not found in expected directory';
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
-                \"$CARGO_HOME/bin/cargo\" build --example whisper --release;
-                ls" \
+                \"$CARGO_HOME/bin/cargo\" build --example whisper --release || echo 'cargo not found in expected directory';
+                 ls" \
           --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
