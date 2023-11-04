@@ -61,27 +61,27 @@ jobs:
         echo "Command Output:"
         echo "$OUTPUT"
     
-    - name: Download Whisper Binary
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.VM_SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        scp -o StrictHostKeyChecking=no runner@172.191.177.239:/root/candle/target/release/examples/whisper .
-      env:
-        VM_USER: runner
-        SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+    # - name: Download Whisper Binary
+    #   run: |
+    #     mkdir -p ~/.ssh
+    #     echo "${{ secrets.VM_SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+    #     chmod 600 ~/.ssh/id_rsa
+    #     scp -o StrictHostKeyChecking=no runner@172.191.177.239:/root/candle/target/release/examples/whisper .
+    #   env:
+    #     VM_USER: runner
+    #     SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
 
-    - name: Track with Git LFS
-      run: |
-        git lfs track "whisper"
-        git add .gitattributes whisper
+    # - name: Track with Git LFS
+    #   run: |
+    #     git lfs track "whisper"
+    #     git add .gitattributes whisper
 
-    - name: Commit and push Whisper binary
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Add Whisper binary with LFS" -- whisper .gitattributes
-        git push
+    # - name: Commit and push Whisper binary
+    #   run: |
+    #     git config --local user.email "action@github.com"
+    #     git config --local user.name "GitHub Action"
+    #     git commit -m "Add Whisper binary with LFS" -- whisper .gitattributes
+    #     git push
 
     # - name: Download Whisper Binary
     #   env:
