@@ -13,53 +13,36 @@ on:
 jobs:
   check-download-upload:
     runs-on: ubuntu-latest
-
+    env:
+      VM_USER: runner
+      VM_IP: ${{ github.event.inputs.vm_ip }}
+      SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
     steps:
-      - name: Find Whisper Binary in VM
-        run: |
-          # Find the whisper binary in the VM's file system
-          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper 2>/dev/null"
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-        env:
-          VM_USER: runner
-          VM_IP: ${{ github.event.inputs.vm_ip }}
-
-      - name: Find Candle Directory in VM
-        run: |
-          # Find the candle directory in the VM's file system
-          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-        env:
-          VM_USER: runner
-          VM_IP: ${{ github.event.inputs.vm_ip }}
-
-      - name: Check Whisper Binary Exists After Build
-        env:
-          VM_USER: runner
-          VM_IP: ${{ github.event.inputs.vm_ip }}
-          SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+      - name: Setup SSH Key and Permissions
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          
-          # Check if Whisper binary exists right after build
-          # Replace this with the actual build output directory from the build step
-          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
+          ssh-keyscan -H $VM_IP >> ~/.ssh/known_hosts
+        shell: bash
+
+      - name: Check SSH Connection
+        run: ssh -vvv -o StrictHostKeyChecking=no $VM_USER@$VM_IP "echo 'SSH connection successful'"
+        shell: bash
+
+      - name: Find Candle Directory in VM
+        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
+        shell: bash
+
+      - name: Check Whisper Binary Exists After Build
+        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
         shell: bash
 
       - name: Check Whisper Binary Exists in Expected Directory
-        if: success() # Only runs if the previous step was successful
-        env:
-          VM_USER: runner
-          VM_IP: ${{ github.event.inputs.vm_ip }}
-          SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
         run: |
-          # SSH into the VM and list the contents of the directory
-          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l /candle/target/release/examples/"
-          
-          # If the file is not found, use find command to search across the filesystem
-          if ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "test ! -f /candle/target/release/examples/whisper"; then
+          set +e # Allow the next command to fail without exiting the script
+          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l /candle/target/release/examples/whisper"
+          if [ $? -ne 0 ]; then
             echo "The whisper binary was not found at the specified path. Searching the entire filesystem..."
             ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper"
           else
@@ -68,18 +51,10 @@ jobs:
         shell: bash
 
       - name: Download Whisper Binary
-        if: success() # Only runs if the previous step was successful
-        env:
-          VM_USER: runner
-          VM_IP: ${{ github.event.inputs.vm_ip }}
-          SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-        run: |
-          # Use SCP to copy the binary from VM to the GitHub runner
-          scp -o StrictHostKeyChecking=no $VM_USER@$VM_IP:/candle/target/release/examples/whisper .
+        run: scp -o StrictHostKeyChecking=no $VM_USER@$VM_IP:/candle/target/release/examples/whisper .
         shell: bash
 
       - name: Upload Whisper Binary
-        if: success() # Only runs if the previous step was successful
         uses: actions/upload-artifact@v2
         with:
           name: whisper-binary
