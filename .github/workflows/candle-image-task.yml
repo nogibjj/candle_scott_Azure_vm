@@ -58,14 +58,18 @@ jobs:
                 ./whisper
                 # Check if the Whisper binary exists
                 WHISPER_BINARY='./whisper'
-                if [ -f "\$WHISPER_BINARY" ]; then
-                    # Configure Git and LFS
-                    git config --global user.email \"scott.lai@duke.edu\"
-                    git config --global user.name \"scottLL\"
+                if [ -f "$WHISPER_BINARY" ]; then
+                    # Install Git LFS
                     git lfs install
-                    git lfs track "whisper*" # Replace with actual file extension
-                    git add .gitattributes "\$WHISPER_BINARY"
-                    git commit -m \"Add whisper binary\"
+                    # Make sure the whisper binary matches the pattern used here
+                    git lfs track "${WHISPER_BINARY}"
+                    # You must add the .gitattributes, which contains the LFS tracking rules
+                    git add .gitattributes
+                    # Add the binary file to the git
+                    git add "${WHISPER_BINARY}"
+                    # Commit changes including the .gitattributes and the binary
+                    git commit -m "Add whisper binary"
+                    # Push the changes. Make sure to use 'lfs' if you're pushing a large file
                     git push origin main
                 else
                     echo 'Whisper binary not found.'
