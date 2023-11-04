@@ -15,29 +15,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check and Transfer Whisper Binary
+    - name: Check Whisper Binary Exists
       env:
         VM_USER: runner
-        VM_IP: 172.191.177.239
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        VM_IP: ${{ github.event.inputs.vm_ip }}
+        SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
       run: |
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP << EOF
-        # The 'find' command is more appropriate for searching files within a directory tree
-        # Looking for 'whisper' binary within '/candle/target/release/'
-        WHISPER_PATH=\$(find /candle/target/release/ -type f -name whisper)
-        if [[ ! -z "\$WHISPER_PATH" ]]; then
-          echo "Whisper binary found at: \$WHISPER_PATH"
-          # Add any additional commands you need, for example, to transfer the binary
+        
+        # SSH into the VM and list the contents of the directory
+        ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l /candle/target/release/examples/"
+        
+        # If the file is not found, use find command to search across the filesystem
+        if ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "test ! -f /candle/target/release/examples/whisper"; then
+          echo "The whisper binary was not found at the specified path. Searching the entire filesystem..."
+          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper"
         else
-          echo "Whisper binary not found in /candle/target/release/"
-          exit 1
+          echo "Whisper binary exists at the specified path."
         fi
-        EOF
       shell: bash
-
 
     - name: Download Whisper Binary
       if: success() # Only runs if the previous step was successful
