@@ -55,6 +55,7 @@ jobs:
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 # Navigate to the build directory
                 cd target/release/examples
+                ./whisper
                 # Check if the Whisper binary exists
                 WHISPER_BINARY='./whisper'
                 if [ -f "\$WHISPER_BINARY" ]; then
@@ -62,7 +63,7 @@ jobs:
                     git config --global user.email \"scott.lai@duke.edu\"
                     git config --global user.name \"scottLL\"
                     git lfs install
-                    git lfs track "Whisper" # Replace with actual file extension
+                    git lfs track "whisper" # Replace with actual file extension
                     git add .gitattributes "\$WHISPER_BINARY"
                     git commit -m \"Add whisper binary\"
                     git push origin main
