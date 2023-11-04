@@ -43,16 +43,29 @@ jobs:
 
       - name: Find Whisper Binary in VM
         run: |
-          WHISPER_PATH=$(ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper 2>/dev/null")
-          if [[ -z "$WHISPER_PATH" ]]; then
+          WHISPER_PATHS=$(ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper 2>/dev/null" || echo "find_error")
+          if [[ "$WHISPER_PATHS" == "find_error" ]]; then
+            echo "Error executing find command on the VM."
+            exit 1
+          fi
+          if [[ -z "$WHISPER_PATHS" ]]; then
             echo "The whisper binary was not found on the VM."
             exit 1
-          else
-            echo "Whisper binary found at: $WHISPER_PATH"
-            CANDLE_DIR=$(dirname "$WHISPER_PATH")
-            echo "CANDLE_DIR is set to $CANDLE_DIR"
           fi
+          # Handling potential multiple paths
+          IFS=$'\n' read -rd '' -a WHISPER_ARRAY <<< "$WHISPER_PATHS"
+          if (( ${#WHISPER_ARRAY[@]} > 1 )); then
+            echo "Multiple whisper binaries found:"
+            printf '%s\n' "${WHISPER_ARRAY[@]}"
+            # Choose the correct binary path, here assuming the first one
+            WHISPER_PATH=${WHISPER_ARRAY[0]}
+          else
+            WHISPER_PATH=$WHISPER_PATHS
+          fi
+          CANDLE_DIR=$(dirname "$WHISPER_PATH")
+          echo "CANDLE_DIR is set to $CANDLE_DIR"
         shell: bash
+    
 
 
       - name: Check Whisper Binary Exists in Known Directory
