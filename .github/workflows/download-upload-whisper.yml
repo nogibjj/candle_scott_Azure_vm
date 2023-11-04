@@ -15,6 +15,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Find Whisper Binary in VM
+        run: |
+          # Find the whisper binary in the VM's file system
+          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper 2>/dev/null"
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+        env:
+          VM_USER: runner
+          VM_IP: ${{ github.event.inputs.vm_ip }}
+
+      - name: Find Candle Directory in VM
+        run: |
+          # Find the candle directory in the VM's file system
+          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+        env:
+          VM_USER: runner
+          VM_IP: ${{ github.event.inputs.vm_ip }}
+
       - name: Check Whisper Binary Exists After Build
         env:
           VM_USER: runner
