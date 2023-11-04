@@ -17,7 +17,7 @@ jobs:
       VM_USER: runner
       VM_IP: ${{ github.event.inputs.vm_ip }}
       SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-      CANDLE_DIR: /opt/actions-runner/candle # Define the known directory path from Find Candle Directory in VM as an environment variable
+      # CANDLE_DIR: /opt/actions-runner/candle # Define the known directory path from Find Candle Directory in VM as an environment variable
     steps:
       - name: Setup SSH Key and Permissions
         run: |
@@ -31,14 +31,29 @@ jobs:
         run: ssh -vvv -o StrictHostKeyChecking=no $VM_USER@$VM_IP "echo 'SSH connection successful'"
         shell: bash
       
-      - name: Find Candle Directory in VM
-        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
+      # - name: Find Candle Directory in VM
+      #   run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
+      #   shell: bash
+
+      # - name: Check Whisper Binary in VM
+      #   # run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
+      #   run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name whisper 2>/dev/null"
+      #   shell: bash
+
+
+      - name: Find Whisper Binary in VM
+        run: |
+          WHISPER_PATH=$(ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper 2>/dev/null")
+          if [[ -z "$WHISPER_PATH" ]]; then
+            echo "The whisper binary was not found on the VM."
+            exit 1
+          else
+            echo "Whisper binary found at: $WHISPER_PATH"
+            CANDLE_DIR=$(dirname "$WHISPER_PATH")
+            echo "CANDLE_DIR is set to $CANDLE_DIR"
+          fi
         shell: bash
 
-      - name: Check Whisper Binary in VM
-        # run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
-        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name whisper 2>/dev/null"
-        shell: bash
 
       - name: Check Whisper Binary Exists in Known Directory
         run: |
