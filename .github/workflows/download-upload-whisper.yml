@@ -1,20 +1,25 @@
 name: Download and Upload Whisper Binary
 
 on:
+  workflow_dispatch:
+    inputs:
+      vm_name:
+        description: 'Name of the VM to run tasks on'
+        required: true
   workflow_run:
-    workflows: ["candle-image-task.yml"]  # This should be the name of the YAML file triggering the workflow
+    workflows: ["Candle Image Task"]
     types:
       - completed
 
 jobs:
   download-and-upload:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
 
     steps:
     - name: Download Whisper Binary
       env:
-        VM_NAME: ${{ github.event.workflow_run.inputs.vm_name }}
+        VM_NAME: ${{ github.event.workflow_run.inputs.vm_name || github.event.inputs.vm_name }}
         VM_USER: runner  # Replace with the VM's user name
         VM_IP: 172.191.177.239  # Replace with the VM's public IP address
         SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
