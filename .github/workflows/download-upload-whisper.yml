@@ -31,13 +31,14 @@ jobs:
         run: ssh -vvv -o StrictHostKeyChecking=no $VM_USER@$VM_IP "echo 'SSH connection successful'"
         shell: bash
       
-      # - name: Find Candle Directory in VM
-      #   run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
-      #   shell: bash
+      - name: Find Candle Directory in VM
+        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
+        shell: bash
 
-      # - name: Check Whisper Binary Exists After Build
-      #   run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
-      #   shell: bash
+      - name: Check Whisper Binary in VM
+        # run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
+        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name whisper 2>/dev/null"
+        shell: bash
 
       - name: Check Whisper Binary Exists in Known Directory
         run: |
