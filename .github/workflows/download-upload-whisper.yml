@@ -1,0 +1,34 @@
+name: Download and Upload Whisper Binary
+
+on:
+  workflow_run:
+    workflows: ["Candle Image Task"]
+    types:
+      - completed
+
+jobs:
+  download-and-upload:
+    runs-on: ubuntu-latest
+    needs: run-candle-image-task
+    if: ${{ needs.run-candle-image-task.result == 'success' }}
+
+    steps:
+    - name: Download Whisper Binary
+      env:
+        VM_NAME: ${{ github.event.workflow_run.inputs.vm_name }}
+        VM_USER: runner # Use the appropriate VM's user name
+        VM_IP: 172.191.177.239 # Use the correct VM's public IP address
+        SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        # Use SCP to copy the binary from VM to the GitHub runner
+        scp -o StrictHostKeyChecking=no $VM_USER@$VM_IP:/candle/target/release/examples/whisper .
+      shell: bash
+
+    - name: Upload Whisper Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: whisper-binary
+        path: ./whisper
