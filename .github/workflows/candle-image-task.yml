@@ -56,25 +56,20 @@ jobs:
                 # Navigate to the build directory
                 cd target/release/examples
                 ./whisper
-                # Check if the Whisper binary exists
-                WHISPER_BINARY='./whisper'
+                # Check the Whisper binary and gather some info
+                WHISPER_BINARY='./target/release/examples/whisper'
                 if [ -f "$WHISPER_BINARY" ]; then
-                    # Install Git LFS
-                    git lfs install
-                    # Make sure the whisper binary matches the pattern used here
-                    git lfs track "${WHISPER_BINARY}"
-                    # You must add the .gitattributes, which contains the LFS tracking rules
-                    git add .gitattributes
-                    # Add the binary file to the git
-                    git add "${WHISPER_BINARY}"
-                    # Commit changes including the .gitattributes and the binary
-                    git commit -m "Add whisper binary"
-                    # Push the changes. Make sure to use 'lfs' if you're pushing a large file
-                    git push origin main
+                    chmod +x "$WHISPER_BINARY"
+                    file "$WHISPER_BINARY"
                 else
                     echo 'Whisper binary not found.'
                     exit 1
                 fi
+                
+                # Assuming the use of GitHub CLI for creating a release
+                # Replace 'version_tag' with your actual versioning tag
+                gh release create version_tag "$WHISPER_BINARY" --title 'New Whisper Release' --notes 'Whisper binary release for GNU/Linux.'
+               
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
