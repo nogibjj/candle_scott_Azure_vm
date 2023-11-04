@@ -22,7 +22,7 @@ jobs:
     - name: Run Candle Image Task
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
-        OUTPUT=$(az vm run-command \
+        OUTPUT=$(az vm run-command invoke\
             --resource-group githubVM \
             --name "$VM_NAME" \
             --command-id RunShellScript \
