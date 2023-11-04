@@ -54,6 +54,13 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 ls;
+                WHISPER_BINARY_PATH=/root/candle/target/release/examples/whisper
+                if [ -f "$WHISPER_BINARY_PATH" ]; then
+                    echo "Whisper binary successfully built at: $WHISPER_BINARY_PATH"
+                else
+                    echo "Failed to find whisper binary after build."
+                    exit 1
+                fi
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
