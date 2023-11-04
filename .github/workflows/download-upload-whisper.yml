@@ -1,4 +1,4 @@
-name: Download and Upload Whisper Binary
+name: Check and Transfer Whisper Binary
 
 on:
   workflow_dispatch:
@@ -6,32 +6,40 @@ on:
       vm_name:
         description: 'Name of the VM to run tasks on'
         required: true
-  workflow_run:
-    workflows: ["Candle Image Task"]
-    types:
-      - completed
+      vm_ip:
+        description: 'Public IP address of the VM'
+        required: true
 
 jobs:
-  download-and-upload:
+  check-download-upload:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
 
     steps:
-    - name: Download Whisper Binary
+    - name: Check Whisper Binary Exists
       env:
-        VM_NAME: ${{ github.event.workflow_run.inputs.vm_name || github.event.inputs.vm_name }}
-        VM_USER: runner  # Replace with the VM's user name
-        VM_IP: 172.191.177.239  # Replace with the VM's public IP address
+        VM_USER: runner
+        VM_IP: ${{ github.event.inputs.vm_ip }}
         SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
       run: |
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+        ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l /candle/target/release/examples/whisper"
+      shell: bash
+
+    - name: Download Whisper Binary
+      if: success() # Only runs if the previous step was successful
+      env:
+        VM_USER: runner
+        VM_IP: ${{ github.event.inputs.vm_ip }}
+        SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+      run: |
         # Use SCP to copy the binary from VM to the GitHub runner
         scp -o StrictHostKeyChecking=no $VM_USER@$VM_IP:/candle/target/release/examples/whisper .
       shell: bash
 
     - name: Upload Whisper Binary
+      if: success() # Only runs if the previous step was successful
       uses: actions/upload-artifact@v2
       with:
         name: whisper-binary
