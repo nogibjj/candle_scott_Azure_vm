@@ -22,7 +22,7 @@ jobs:
     - name: Run Candle Image Task
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
-        OUTPUT=$(az vm run-command invoke \
+        OUTPUT=$(az vm run-command \
             --resource-group githubVM \
             --name "$VM_NAME" \
             --command-id RunShellScript \
@@ -53,9 +53,21 @@ jobs:
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
-                ls;
-                cd /target/release/examples;
-                ls;
+                WHISPER_BINARY=./target/release/examples/whisper
+                if [ -f \"$WHISPER_BINARY\" ]; then
+                    # Configure Git and LFS
+                    git config --global user.email \"scott.lai@duke.edu\"
+                    git config --global user.name \"scottLL\"
+                    git lfs install
+                    git lfs track \"$WHISPER_BINARY\"
+                    # Commit and push the binary
+                    git add \"$WHISPER_BINARY\"
+                    git commit -m \"Add whisper binary\"
+                    git push origin main
+                else
+                    echo 'Whisper binary not found.'
+                    exit 1
+                fi
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
