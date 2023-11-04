@@ -53,7 +53,8 @@ jobs:
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
-                WHISPER_BINARY=./target/release/examples/whisper
+
+                WHISPER_BINARY=./target/release/examples/Whisper
                 if [ -f \"$WHISPER_BINARY\" ]; then
                     # Configure Git and LFS
                     git config --global user.email \"scott.lai@duke.edu\"
