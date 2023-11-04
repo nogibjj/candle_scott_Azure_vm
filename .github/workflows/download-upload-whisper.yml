@@ -17,6 +17,7 @@ jobs:
       VM_USER: runner
       VM_IP: ${{ github.event.inputs.vm_ip }}
       SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+      CANDLE_DIR: /opt/actions-runner/candle # Define the known directory path from Find Candle Directory in VM as an environment variable
     steps:
       - name: Setup SSH Key and Permissions
         run: |
@@ -29,33 +30,36 @@ jobs:
       - name: Check SSH Connection
         run: ssh -vvv -o StrictHostKeyChecking=no $VM_USER@$VM_IP "echo 'SSH connection successful'"
         shell: bash
+      
+      # - name: Find Candle Directory in VM
+      #   run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
+      #   shell: bash
 
-      - name: Find Candle Directory in VM
-        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type d -name candle 2>/dev/null"
-        shell: bash
+      # - name: Check Whisper Binary Exists After Build
+      #   run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
+      #   shell: bash
 
-      - name: Check Whisper Binary Exists After Build
-        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l ~/candle/target/release/examples/whisper"
-        shell: bash
-
-      - name: Check Whisper Binary Exists in Expected Directory
+      - name: Check Whisper Binary Exists in Known Directory
         run: |
-          set +e # Allow the next command to fail without exiting the script
-          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "ls -l /candle/target/release/examples/whisper"
-          if [ $? -ne 0 ]; then
-            echo "The whisper binary was not found at the specified path. Searching the entire filesystem..."
-            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "find / -type f -name whisper"
+          if ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "test -f $CANDLE_DIR/target/release/examples/whisper"; then
+            echo "Whisper binary exists in the known directory."
           else
-            echo "Whisper binary exists at the specified path."
+            echo "The whisper binary was not found in the known directory."
+            exit 1
           fi
         shell: bash
 
       - name: Download Whisper Binary
-        run: scp -o StrictHostKeyChecking=no $VM_USER@$VM_IP:/candle/target/release/examples/whisper .
+        run: scp -o StrictHostKeyChecking=no $VM_USER@$VM_IP:$CANDLE_DIR/target/release/examples/whisper .
         shell: bash
 
-      - name: Upload Whisper Binary
+      - name: Upload Whisper Binary to GitHub Artifact Storage
         uses: actions/upload-artifact@v2
         with:
           name: whisper-binary
           path: ./whisper
+
+
+
+
+
