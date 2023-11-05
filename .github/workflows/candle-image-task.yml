@@ -20,9 +20,10 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     - name: Run Candle Image Task
+      env:
+        STORAGE_ACCOUNT_KEY: ${{ secrets.STORAGE_ACCOUNT_KEY }}
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
-        STORAGE_ACCOUNT_KEY="${{ secrets.STORAGE_ACCOUNT_KEY }}" # Retrieve the secret and assign it to a variable
         OUTPUT=$(az vm run-command invoke\
             --resource-group githubVM \
             --name "$VM_NAME" \
@@ -58,7 +59,7 @@ jobs:
                 cd target/release/examples
                 ./whisper
                 # After build, upload the binary to Azure Blob Storage
-                WHISPER_BINARY="./target/release/examples/whisper"
+                WHISPER_BINARY="/root/candle/target/release/examples/whisper"
                 # Check if the Whisper binary exists and upload it to Azure Blob Storage
                 if [ -f "$WHISPER_BINARY" ]; then
                     echo "Whisper binary exists at $WHISPER_BINARY"
@@ -69,7 +70,7 @@ jobs:
                     # Upload the binary to Azure Blob Storage
                     az storage blob upload \
                       --account-name candle \
-                      --account-key $STORAGE_ACCOUNT_KEY \
+                      --account-key \$STORAGE_ACCOUNT_KEY \
                       --container-name whisper-binaries \
                       --file "$WHISPER_BINARY" \
                       --name whisper
@@ -78,6 +79,7 @@ jobs:
                     exit 1
                 fi
                 " \
+            --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
