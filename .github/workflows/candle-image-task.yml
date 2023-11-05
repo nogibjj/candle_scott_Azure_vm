@@ -58,12 +58,19 @@ jobs:
                 cd target/release/examples
                 ./whisper
                 # After build, upload the binary to Azure Blob Storage
+                WHISPER_BINARY=$(realpath whisper)
+                if [ -f "$WHISPER_BINARY" ]; then
+                  echo "Whisper binary exists at $WHISPER_BINARY"
+                else
+                  echo "Whisper binary not found"
+                  exit 1
+                fi
                 az storage blob upload \
                   --account-name candle \
                   --account-key $STORAGE_ACCOUNT_KEY \
                   --container-name whisper-binaries \
-                  --file target/release/examples/whisper \
-                  --name whisper-binary
+                  --file "$WHISPER_BINARY" \
+                  --name whisper
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
