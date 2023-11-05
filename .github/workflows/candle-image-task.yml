@@ -58,21 +58,19 @@ jobs:
                 # Navigate to the build directory
                 # cd target/release/examples
                 # ./whisper
-                # After build, upload the binary to Azure Blob Storage
-                WHISPER_BINARY_PATH='./target/release/examples/Whisper'
-                if [ -f "$WHISPER_BINARY_PATH" ]; then
-                    echo "Whisper binary exists at $WHISPER_BINARY_PATH"
-                    # Upload the binary to Azure Blob Storage
-                    az storage blob upload \
+                # After build, upload the binary folder to Azure Blob Storage
+                # Define the directory path containing the built examples
+                EXAMPLES_DIR='./target/release/examples'
+                # Check if the directory exists and upload it
+                if [ -d "\$EXAMPLES_DIR" ]; then
+                    echo "Uploading the examples directory"
+                    az storage blob upload-batch \
                       --account-name candle \
-                      --account-key $STORAGE_ACCOUNT_KEY \
-                      --container-name whisper-binaries \
-                      --file "$WHISPER_BINARY_PATH" \
-                      --name whisper
+                      --account-key \$STORAGE_ACCOUNT_KEY \
+                      --destination whisper-binaries \
+                      --source "\$EXAMPLES_DIR"
                 else
-                    echo "Whisper binary not found"
-                    # List the contents of the target/release/examples directory for debugging
-                    ls -la ./target/release/examples
+                    echo "Examples directory not found"
                     exit 1
                 fi
                 " \
