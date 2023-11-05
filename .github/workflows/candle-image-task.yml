@@ -22,6 +22,7 @@ jobs:
     - name: Run Candle Image Task
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
+        STORAGE_ACCOUNT_KEY="${{ secrets.STORAGE_ACCOUNT_KEY }}" # Retrieve the secret and assign it to a variable
         OUTPUT=$(az vm run-command invoke\
             --resource-group githubVM \
             --name "$VM_NAME" \
@@ -56,18 +57,13 @@ jobs:
                 # Navigate to the build directory
                 cd target/release/examples
                 ./whisper
-                # Install GitHub CLI
-                curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-                echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-                apt update
-                apt install gh
-
-                # Authenticate with GitHub CLI using a token from secrets
-                echo ${{ secrets.PAT }} | gh auth login --with-token
-
-                # Create a new GitHub release with the version tag V.0.1
-                gh release create V.0.1 \"$WHISPER_BINARY\" --title 'New Whisper Release V.0.1' --notes 'Whisper binary release for GNU/Linux.'
-
+                # After build, upload the binary to Azure Blob Storage
+                az storage blob upload \
+                  --account-name candle \
+                  --account-key $STORAGE_ACCOUNT_KEY \
+                  --container-name whisper-binaries \
+                  --file target/release/examples/whisper \
+                  --name whisper-binary
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
