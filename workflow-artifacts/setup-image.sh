@@ -62,7 +62,7 @@ echo "All necessary components have been installed and configured."
 # Note: You would typically add your runner configuration and service installation steps
 # when you're about to deploy the VM, not when you're creating the base image.
 # These steps should be executed after the VM starts, so they are not included here.
-
+ 
 
 
 
