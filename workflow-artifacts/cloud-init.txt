@@ -45,12 +45,8 @@ su - $RUNNER_USER -c "$WORK_DIR/config.sh --unattended --url https://github.com/
 # Install the service
 ./svc.sh install $RUNNER_USER
 
-# Schedule the runner to start immediately but in the background
-nohup su - runner -c "$WORK_DIR/run.sh" &
+# Start the service
+./svc.sh start
 
 # Clone repository and build project (add this to the appropriate place in your workflow)
 git clone https://github.com/huggingface/candle.git
-
-
-
-
