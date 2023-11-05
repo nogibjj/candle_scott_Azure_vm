@@ -34,12 +34,12 @@ tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
 # sudo apt-get update
 # sudo apt-get -y install cuda-drivers
 
-# # install Rust CLI 
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-# # source "$HOME/.cargo/env"
+# install Rust CLI 
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
 
-# # Clone candle-core 
-# git clone https://github.com/huggingface/candle.git
+# Clone candle-core 
+git clone https://github.com/huggingface/candle.git
 
 # # Add Rust and CUDA to PATH for all sessions
 # # echo 'export PATH=/usr/local/cuda/bin:$PATH' >> $HOME/.profile
