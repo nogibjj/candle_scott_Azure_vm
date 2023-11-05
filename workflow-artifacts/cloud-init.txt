@@ -1,13 +1,56 @@
 #!/bin/bash
 
+# Exit script on error
+set -e
 
 # Define a working directory
 WORK_DIR="/opt/actions-runner"
+RUNNER_USER="runner"
+GITHUB_OWNER="nogibjj"
+GITHUB_REPO="candle_scott_Azure_vm"
+RUNNER_TOKEN="$RUNNER_TOKEN" # This should be replaced at runtime with the actual token
 
-chown -R runner $WORK_DIR
+# Update and install necessary packages for building and running your application
+apt-get update
+apt-get install -y curl tar sudo git build-essential pkg-config libssl-dev apt-transport-https ca-certificates
+
+# Install GitHub CLI
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+apt update
+apt install -y gh
+
+# Install Rust and Cargo
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
+
+# Create a runner user
+useradd -m -s /bin/bash $RUNNER_USER
+echo "$RUNNER_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Download the latest runner package
+mkdir -p $WORK_DIR
+chown -R $RUNNER_USER:$RUNNER_USER $WORK_DIR
+cd $WORK_DIR
+curl -o actions-runner-linux-x64-2.310.2.tar.gz -L https://github.com/actions/runner/releases/download/v2.310.2/actions-runner-linux-x64-2.310.2.tar.gz
+
+# Extract the installer
+tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
+chown -R $RUNNER_USER:$RUNNER_USER $WORK_DIR
+rm -f ./actions-runner-linux-x64-2.310.2.tar.gz
 
 # Configure the runner
-su - runner -c "$WORK_DIR/config.sh --unattended --url https://github.com/nogibjj/candle_scott_Azure_vm --token $RUNNER_TOKEN"
+su - $RUNNER_USER -c "$WORK_DIR/config.sh --unattended --url https://github.com/$GITHUB_OWNER/$GITHUB_REPO --token $RUNNER_TOKEN"
+
+# Install the service
+./svc.sh install $RUNNER_USER
 
 # Schedule the runner to start immediately but in the background
 nohup su - runner -c "$WORK_DIR/run.sh" &
+
+# Clone repository and build project (add this to the appropriate place in your workflow)
+git clone https://github.com/huggingface/candle.git
+
+
+
+
