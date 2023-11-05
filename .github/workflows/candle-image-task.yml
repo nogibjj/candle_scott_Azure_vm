@@ -59,23 +59,17 @@ jobs:
                 # cd target/release/examples
                 # ./whisper
                 # After build, upload the binary to Azure Blob Storage
-                WHISPER_BINARY="\$PWD/target/release/examples/whisper"
-                # Check if the Whisper binary exists and upload it to Azure Blob Storage
-                if [ -f "$WHISPER_BINARY" ]; then
-                    echo "Whisper binary exists at $WHISPER_BINARY"
-
-                    # Retrieve the storage account key from the environment variable
-                    STORAGE_ACCOUNT_KEY="$1"
-
-                    # Upload the binary to Azure Blob Storage
+                WHISPER_BINARY=\$(find \$PWD -name whisper -type f | grep target/release/examples)
+                if [[ -f "\$WHISPER_BINARY" ]]; then
+                    echo "Whisper binary exists at \$WHISPER_BINARY"
                     az storage blob upload \
                       --account-name candle \
                       --account-key \$STORAGE_ACCOUNT_KEY \
                       --container-name whisper-binaries \
-                      --file "$WHISPER_BINARY" \
+                      --file "\$WHISPER_BINARY" \
                       --name whisper
                 else
-                    echo "Whisper binary not found at \$WHISPER_BINARY"
+                    echo "Whisper binary not found"
                     exit 1
                 fi
                 " \
