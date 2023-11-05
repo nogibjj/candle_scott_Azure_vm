@@ -59,7 +59,7 @@ jobs:
                 # cd target/release/examples
                 # ./whisper
                 # After build, upload the binary to Azure Blob Storage
-                WHISPER_BINARY_PATH='./target/release/examples/'
+                WHISPER_BINARY_PATH='./target/release/examples/Whisper'
                 if [ -f "$WHISPER_BINARY_PATH" ]; then
                     echo "Whisper binary exists at $WHISPER_BINARY_PATH"
                     # Upload the binary to Azure Blob Storage
