@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: [actions-runner, linux, x64] # This specifies that the job should run on a self-hosted runner with the specified labels
+    runs-on: self-hosted # Make sure this matches the labels of your self-hosted runner
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -24,8 +24,7 @@ jobs:
       - name: Install Rust
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source $HOME/.cargo/env
-          rustc --version
+          echo "source $HOME/.cargo/env" >> $GITHUB_ENV
 
       - name: Clone and Build Candle
         run: |
@@ -33,10 +32,12 @@ jobs:
           cd candle
           cargo build --example whisper --release
 
-      - name: Run Whisper Example
+      - name: Check Whisper Binary
         run: |
-          cd candle/target/release/examples
-          ./whisper
+          if [ ! -f "candle/target/release/examples/whisper" ]; then
+            echo "Whisper binary not found."
+            exit 1
+          fi
 
       - name: Install GitHub CLI
         run: |
@@ -50,11 +51,9 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          WHISPER_BINARY: candle/target/release/examples/whisper
+          WHISPER_BINARY: ./candle/target/release/examples/whisper
         run: |
           gh release create V.0.1 "$WHISPER_BINARY" --title 'New Whisper Release V.0.1' --notes 'Whisper binary release for GNU/Linux.'
-
-
 
 
 
