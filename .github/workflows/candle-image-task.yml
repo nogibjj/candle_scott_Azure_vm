@@ -58,18 +58,25 @@ jobs:
                 # Navigate to the build directory
                 # cd target/release/examples
                 # ./whisper
-                # Find the whisper binary in the file system
-                WHISPER_BINARY_PATH=$(find / -type f -name whisper 2>/dev/null)
-                
-                # Check if the whisper binary was found
-                if [[ -n \"$WHISPER_BINARY_PATH\" ]]; then
-                    echo \"Whisper binary found at $WHISPER_BINARY_PATH\"
-                    
-                    # Upload the whisper binary using the managed identity
-                    # Replace <storage-account-name> with your actual storage account name
-                    azcopy copy \"$WHISPER_BINARY_PATH\" \"https://<storage-account-name>.blob.core.windows.net/whisper-binaries/whisper\" --recursive
+                # Confirm current directory
+                echo "Current directory:"
+                pwd
+
+                # List contents of the directory
+                echo "Listing contents of $(pwd):"
+                ls -al
+
+                # Check if whisper binary exists in the expected location
+                WHISPER_BINARY_PATH="./target/release/examples/whisper"
+                if [ -f "$WHISPER_BINARY_PATH" ]; then
+                    echo "Whisper binary exists at $WHISPER_BINARY_PATH"
                 else
-                    echo \"Whisper binary not found anywhere in the file system.\"
+                    echo "Whisper binary not found at $WHISPER_BINARY_PATH"
+                    # List the contents of the target/release/examples directory for debugging
+                    echo "Listing contents of target/release/examples:"
+                    ls -al target/release/examples
+                    # Since we know the directory, there's no need to search the entire filesystem
+                    # find / -type f -name whisper 2>/dev/null
                     exit 1
                 fi
                 " \
