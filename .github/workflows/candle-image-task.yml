@@ -56,10 +56,10 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 # Navigate to the build directory
-                cd target/release/examples
-                ./whisper
+                # cd target/release/examples
+                # ./whisper
                 # After build, upload the binary to Azure Blob Storage
-                WHISPER_BINARY="/root/candle/target/release/examples/whisper"
+                WHISPER_BINARY="\$PWD/target/release/examples/whisper"
                 # Check if the Whisper binary exists and upload it to Azure Blob Storage
                 if [ -f "$WHISPER_BINARY" ]; then
                     echo "Whisper binary exists at $WHISPER_BINARY"
@@ -75,7 +75,7 @@ jobs:
                       --file "$WHISPER_BINARY" \
                       --name whisper
                 else
-                    echo "Whisper binary not found"
+                    echo "Whisper binary not found at \$WHISPER_BINARY"
                     exit 1
                 fi
                 " \
