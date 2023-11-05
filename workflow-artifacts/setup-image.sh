@@ -1,11 +1,14 @@
 #!/bin/bash
 # Setup the runner to have the Azure CLI and other dependencies pre-installed
 
+# Exit script on error
+set -e
+
 # Define a working directory
 WORK_DIR="/opt/actions-runner"
 RUNNER_VERSION="2.310.2"  # Update to the desired version
 
-# Install system dependencies
+# Update and install system dependencies
 apt-get update
 apt-get install -y curl tar sudo git build-essential pkg-config libssl-dev apt-transport-https ca-certificates
 
@@ -27,7 +30,7 @@ rustc --version || { echo "Rust installation failed"; exit 1; }
 # Create a directory for the runner and navigate to it
 mkdir -p "${WORK_DIR}" && cd "${WORK_DIR}"
 
-# Download the latest runner package
+# Download the specified version of the GitHub Actions runner
 curl -o "actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" -L "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz"
 
 # Extract the installer
@@ -42,10 +45,19 @@ useradd -m -s /bin/bash "${RUNNER_USER}"
 echo "${RUNNER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 chown -R "${RUNNER_USER}":"${RUNNER_USER}" "${WORK_DIR}"
 
-# Set the correct permission to the script
+# Set the correct permissions for the scripts
 chmod +x "${WORK_DIR}"/bin/*.sh
 
+# Clone the candle repository
+git clone https://github.com/huggingface/candle.git "${WORK_DIR}/candle"
+chown -R "${RUNNER_USER}":"${RUNNER_USER}" "${WORK_DIR}/candle"
+
 echo "All necessary components have been installed and configured."
+
+# Any additional packages that need to be installed can be added here
+
+# Note: Configuration and service installation steps should be in the cloud-init.txt
+# or executed when the VM is deployed.
 
 # Note: You would typically add your runner configuration and service installation steps
 # when you're about to deploy the VM, not when you're creating the base image.
