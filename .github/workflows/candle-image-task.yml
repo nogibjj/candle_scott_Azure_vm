@@ -71,11 +71,14 @@ jobs:
                 if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
                     echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
 
-                    # Initialize Git LFS
+                    # Install Git LFS
+                    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+                    apt-get install git-lfs
                     git lfs install
 
                     # Navigate to the repository root
                     cd ../../../
+
 
                     # Track the binary using Git LFS
                     git lfs track \"target/release/examples/whisper\"
