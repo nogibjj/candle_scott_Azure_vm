@@ -57,8 +57,8 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 # Navigate to the build directory
-                # cd target/release/examples
-
+                cd target/release/examples
+                ./whisper
                 # Confirm current directory
                 echo \"Current directory:\"
                 pwd
