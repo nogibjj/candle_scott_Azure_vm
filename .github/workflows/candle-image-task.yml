@@ -32,7 +32,7 @@ jobs:
                 #!/bin/bash
                 set -e
                 ls
-                
+
             #     # Install C compiler and related tools
             #     apt-get update
             #     apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler
@@ -83,7 +83,8 @@ jobs:
             #     fi
             #     " \
             # --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
-            --query "value[].message" --output tsv)
+            # --query "value[].message" --output tsv
+            )
         echo "Command Output:"
         echo "$OUTPUT"
     
