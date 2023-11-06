@@ -96,7 +96,7 @@ jobs:
 
                     # Create a new release
                     RELEASE_TAG="release-$(date +%s)"
-                    POST_DATA="{\"tag_name\": \"$RELEASE_TAG\", \"name\": \"Automated release $RELEASE_TAG\", \"body\": \"This is an automated release.\", \"draft\": false, \"prerelease\": false}"
+                    POST_DATA="{\"tag_name\": \"${RELEASE_TAG}\", \"name\": \"Automated release ${RELEASE_TAG}\", \"body\": \"This is an automated release.\", \"draft\": false, \"prerelease\": false}"
                     RELEASE_RESPONSE=$(curl --data "$POST_DATA" -H "Authorization: token $PAT" -X POST https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/releases)
                     RELEASE_ID=$(echo $RELEASE_RESPONSE | jq '.id')
 
@@ -111,6 +111,7 @@ jobs:
                     ls -al
                     exit 1
                 fi
+
                 " \
             --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
