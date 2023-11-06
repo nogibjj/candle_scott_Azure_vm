@@ -66,50 +66,47 @@ jobs:
                 # List contents of the directory
                 echo \"Listing contents of \$(pwd):\"
                 ls -al
-
+        
                 # Check if whisper binary exists in the expected location
                 WHISPER_BINARY_PATH=\"\$(pwd)/whisper\"
                 if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
-                    chmod +x \"\$WHISPER_BINARY_PATH\"
-                    # "$WHISPER_BINARY_PATH" || { echo 'Failed to run whisper'; exit 1; }
                     echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
-
+        
                     # Set HOME environment variable explicitly for Git
                     export HOME=/root
-
+        
                     # Install Git LFS
                     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
                     apt-get install git-lfs
                     git lfs install
-
+        
                     # Navigate to the repository root
                     cd ../../../
-
+        
                     # Initialize the repository if not already done
                     git init
-
+        
                     # Configure Git with your name and email
                     git config --global user.email "scott.lai@duke.edu"
                     git config --global user.name "scottLL"
         
                     
-
+        
                     # Check if the remote origin exists
                     if git remote | grep -q origin; then
                         # Update the existing remote origin
-                        git remote set-url origin https://x-access-token:${PAT}@github.com/nogibjj/candle_scott_Azure_vm.git
+                        git remote set-url origin https://x-access-token:$***PAT***@github.com/nogibjj/candle_scott_Azure_vm.git
                     else
                         # Add a new remote origin
-                        git remote add origin https://x-access-token:${PAT}@github.com/nogibjj/candle_scott_Azure_vm.git
+                        git remote add origin https://x-access-token:$***PAT***@github.com/nogibjj/candle_scott_Azure_vm.git
                     fi
-
+        
                     # Track the binary using Git LFS
-                    git lfs track "target/release/example/*"
-                    
-
+                    git lfs track "target/release/examples/whisper"
+        
                     # Add the binary to Git
-                    git add -f target/release/example/*
-
+                    git add -f target/release/examples/whisper
+        
                     git commit -m "Add whisper binary"
                     if git push origin main; then
                         echo "Successfully pushed the binary into GIT LFS"
@@ -117,14 +114,13 @@ jobs:
                         echo "Failed to push the binary into GIT LFS. This repository is over its data quota."
                         exit 1
                     fi
-
+        
                 else
                     echo "Whisper binary not found at $WHISPER_BINARY_PATH"
                     # List the contents of the current directory for debugging
                     ls -al
                     exit 1
                 fi
-                
                 " \
             --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
