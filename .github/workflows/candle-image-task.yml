@@ -105,7 +105,7 @@ jobs:
 
                     # Track the binary using Git LFS
                     # git lfs track "target/release/example/whisper"
-                    git lfs track "$(basename \"\$WHISPER_BINARY_PATH\")""
+                    git lfs track "$(basename \"\$WHISPER_BINARY_PATH\")"
 
                     # Add the binary to Git
                     git add -f $(basename \"\$WHISPER_BINARY_PATH\")
