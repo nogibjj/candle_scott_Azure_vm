@@ -31,56 +31,58 @@ jobs:
             --scripts "
                 #!/bin/bash
                 set -e
-                # Install C compiler and related tools
-                apt-get update
-                apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler
-                # Now install Rust
-                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
-                echo 'Checking installation...'
-                CARGO_HOME='/root/.cargo'
-                RUSTUP_HOME='/root/.rustup'
-                echo \"CARGO_HOME: \$CARGO_HOME\";
-                echo \"RUSTUP_HOME: \$RUSTUP_HOME\";
-                if [ -d \"\$CARGO_HOME/bin\" ]; then
-                    echo '.cargo/bin directory exists.'
-                    ls -alh \"\$CARGO_HOME/bin\"
-                else
-                    echo '.cargo/bin directory NOT found.'
-                    exit 1
-                fi
-                # Using the bash shell to source the environment variables
-                /bin/bash -c \"source \$CARGO_HOME/env\"
-                echo \$PATH
-                /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
-                git clone https://github.com/huggingface/candle.git;
-                cd candle;
-                /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
-                # Navigate to the build directory
-                # cd target/release/examples
-                # ./whisper
-                # Confirm current directory
-                echo "Current directory:"
-                pwd
+                ls
+                
+            #     # Install C compiler and related tools
+            #     apt-get update
+            #     apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler
+            #     # Now install Rust
+            #     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
+            #     echo 'Checking installation...'
+            #     CARGO_HOME='/root/.cargo'
+            #     RUSTUP_HOME='/root/.rustup'
+            #     echo \"CARGO_HOME: \$CARGO_HOME\";
+            #     echo \"RUSTUP_HOME: \$RUSTUP_HOME\";
+            #     if [ -d \"\$CARGO_HOME/bin\" ]; then
+            #         echo '.cargo/bin directory exists.'
+            #         ls -alh \"\$CARGO_HOME/bin\"
+            #     else
+            #         echo '.cargo/bin directory NOT found.'
+            #         exit 1
+            #     fi
+            #     # Using the bash shell to source the environment variables
+            #     /bin/bash -c \"source \$CARGO_HOME/env\"
+            #     echo \$PATH
+            #     /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
+            #     git clone https://github.com/huggingface/candle.git;
+            #     cd candle;
+            #     /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
+            #     # Navigate to the build directory
+            #     # cd target/release/examples
+            #     # ./whisper
+            #     # Confirm current directory
+            #     echo "Current directory:"
+            #     pwd
 
-                # List contents of the directory
-                echo "Listing contents of $(pwd):"
-                ls -al
+            #     # List contents of the directory
+            #     echo "Listing contents of $(pwd):"
+            #     ls -al
 
-                # Check if whisper binary exists in the expected location
-                WHISPER_BINARY_PATH="./target/release/examples/whisper"
-                if [ -f "$WHISPER_BINARY_PATH" ]; then
-                    echo "Whisper binary exists at $WHISPER_BINARY_PATH"
-                else
-                    echo "Whisper binary not found at $WHISPER_BINARY_PATH"
-                    # List the contents of the target/release/examples directory for debugging
-                    echo "Listing contents of target/release/examples:"
-                    ls -al target/release/examples
-                    # Since we know the directory, there's no need to search the entire filesystem
-                    # find / -type f -name whisper 2>/dev/null
-                    exit 1
-                fi
-                " \
-            --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
+            #     # Check if whisper binary exists in the expected location
+            #     WHISPER_BINARY_PATH="./target/release/examples/whisper"
+            #     if [ -f "$WHISPER_BINARY_PATH" ]; then
+            #         echo "Whisper binary exists at $WHISPER_BINARY_PATH"
+            #     else
+            #         echo "Whisper binary not found at $WHISPER_BINARY_PATH"
+            #         # List the contents of the target/release/examples directory for debugging
+            #         echo "Listing contents of target/release/examples:"
+            #         ls -al target/release/examples
+            #         # Since we know the directory, there's no need to search the entire filesystem
+            #         # find / -type f -name whisper 2>/dev/null
+            #         exit 1
+            #     fi
+            #     " \
+            # --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
