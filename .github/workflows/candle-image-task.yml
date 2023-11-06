@@ -87,7 +87,7 @@ jobs:
 
                     # Configure Git with your name and email
                     git config --global user.email "scott.lai@duke.edu"
-                    git config --global user.name "ScottLL"
+                    git config --global user.name "scottLL"
         
                     # Track the binary using Git LFS
                     git lfs track \"target/release/examples/*\"
