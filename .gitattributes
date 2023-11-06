@@ -1,1 +1,1 @@
-whisper filter=lfs diff=lfs merge=lfs -text
+target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text
