@@ -84,8 +84,8 @@ jobs:
                     git add target/release/examples/whisper
 
                     # Commit and push to the repository
-                    git config --global user.email \"you@example.com\"
-                    git config --global user.name \"Your Name\"
+                    git config --global user.email \"scott.lai@duke.edu\"
+                    git config --global user.name \"ScottLL\"
                     git commit -m \"Add whisper binary\"
                     git push origin main
 
