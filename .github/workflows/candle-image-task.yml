@@ -70,6 +70,7 @@ jobs:
                 # Check if whisper binary exists in the expected location
                 WHISPER_BINARY_PATH=\"\$(pwd)/whisper\"
                 if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
+                    chmod +x "$WHISPER_BINARY_PATH"
                     echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
 
                     # Set HOME environment variable explicitly for Git
