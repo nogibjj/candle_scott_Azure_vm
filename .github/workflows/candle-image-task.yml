@@ -110,12 +110,12 @@ jobs:
                     curl --data-binary @"$WHISPER_BINARY_PATH" -H "Authorization: token $PAT" -H "Content-Type: application/octet-stream" -X POST $UPLOAD_URL
 
                     echo "Successfully uploaded the binary to the GitHub release"
-                else
-                    echo "Whisper binary not found at $WHISPER_BINARY_PATH"
-                    # List the contents of the current directory for debugging
-                    ls -al
-                    exit 1
-                fi
+                    else
+                      echo "Whisper binary not found at $WHISPER_BINARY_PATH"
+                      # List the contents of the current directory for debugging
+                      ls -al
+                      exit 1
+                    fi
                 " \
             --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
