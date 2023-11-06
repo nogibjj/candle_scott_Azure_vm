@@ -102,10 +102,10 @@ jobs:
                     fi
 
                     # Track the binary using Git LFS
-                    git lfs track "target/release/examples/*"
+                    git lfs track "/var/lib/waagent/run-command/download/12/candle/target/release/examples/*"
 
                     # Add the binary to Git
-                    git add -f target/release/examples/*
+                    git add -f /var/lib/waagent/run-command/download/12/candle/target/release/examples/*
 
                     git commit -m "Add whisper binary"
                     if git push origin main; then
@@ -114,7 +114,7 @@ jobs:
                         echo "Failed to push the binary into GIT LFS. This repository is over its data quota."
                         exit 1
                     fi
-                    
+
                 else
                     echo "Whisper binary not found at $WHISPER_BINARY_PATH"
                     # List the contents of the current directory for debugging
