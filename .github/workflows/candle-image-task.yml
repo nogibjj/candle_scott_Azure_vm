@@ -93,7 +93,7 @@ jobs:
                     git lfs track \"target/release/examples/*\"
 
                     # Add the binary to Git
-                    git add target/release/examples/*
+                    git add -f target/release/examples/*
 
                     git commit -m \"Add whisper binary\"
                     git push origin main
