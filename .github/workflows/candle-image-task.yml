@@ -57,21 +57,7 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 # Navigate to the build directory
-                cd target/release/examples
-
-                # Navigate to the build directory
-                # cd /var/lib/waagent/run-command/download/15/candle/target/release/examples
-
-                # Before running the binary, ensure it has execute permissions
-                chmod +x whisper
-
-                # # Now attempt to run the whisper binary
-                # if ./whisper; then
-                #     echo "Whisper binary executed successfully."
-                # else
-                #     echo "Failed to execute Whisper binary."
-                #     exit 1
-                # fi
+                # cd target/release/examples
 
                 # Confirm current directory
                 echo \"Current directory:\"
