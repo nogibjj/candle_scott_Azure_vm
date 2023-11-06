@@ -22,6 +22,7 @@ jobs:
     - name: Run Candle Image Task
       env:
         STORAGE_ACCOUNT_KEY: ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        PAT: ${{ secrets.PAT }}
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
         OUTPUT=$(az vm run-command invoke\
@@ -82,13 +83,17 @@ jobs:
                     # Navigate to the repository root
                     cd ../../../
 
-                    # Initialize the repository if not already done
-                    git init
-
                     # Configure Git with your name and email
                     git config --global user.email "scott.lai@duke.edu"
                     git config --global user.name "scottLL"
         
+                    # Initialize the repository if not already done
+                    git init
+        
+                    # Add the remote with the PAT
+                    git remote add origin https://x-access-token:$PAT@github.com/nogibjj/candle_scott_Azure_vm.git
+
+
                     # Track the binary using Git LFS
                     git lfs track \"target/release/examples/*\"
 
