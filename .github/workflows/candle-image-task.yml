@@ -71,6 +71,9 @@ jobs:
                 if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
                     echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
 
+                    # Set HOME environment variable explicitly for Git
+                    export HOME=/root
+
                     # Install Git LFS
                     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
                     apt-get install git-lfs
@@ -79,16 +82,19 @@ jobs:
                     # Navigate to the repository root
                     cd ../../../
 
+                    # Initialize the repository if not already done
+                    git init
 
+                    # Configure Git with your name and email
+                    git config --global user.email "scott.lai@duke.edu"
+                    git config --global user.name "ScottLL"
+        
                     # Track the binary using Git LFS
-                    git lfs track \"target/release/examples/whisper\"
+                    git lfs track \"target/release/examples/*\"
 
                     # Add the binary to Git
-                    git add target/release/examples/whisper
+                    git add target/release/examples/*
 
-                    # Commit and push to the repository
-                    git config --global user.email \"scott.lai@duke.edu\"
-                    git config --global user.name \"ScottLL\"
                     git commit -m \"Add whisper binary\"
                     git push origin main
 
