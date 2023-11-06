@@ -83,16 +83,21 @@ jobs:
                     # Navigate to the repository root
                     cd ../../../
 
+                    # Initialize the repository if not already done
+                    git init
+
                     # Configure Git with your name and email
                     git config --global user.email "scott.lai@duke.edu"
                     git config --global user.name "scottLL"
         
-                    # Initialize the repository if not already done
-                    git init
-        
-                    # Add the remote with the PAT
-                    git remote add origin https://x-access-token:$PAT@github.com/nogibjj/candle_scott_Azure_vm.git
-
+                    # Check if the remote origin exists
+                    if git remote | grep -q origin; then
+                        # Update the existing remote origin
+                        git remote set-url origin https://x-access-token:$PAT@github.com/nogibjj/candle_scott_Azure_vm.git
+                    else
+                        # Add a new remote origin
+                        git remote add origin https://x-access-token:$PAT@github.com/nogibjj/candle_scott_Azure_vm.git
+                    fi
 
                     # Track the binary using Git LFS
                     git lfs track \"target/release/examples/*\"
@@ -102,7 +107,7 @@ jobs:
 
                     git commit -m \"Add whisper binary\"
                     git push origin main
-
+                    echo "Successfully push the binary into GIT LFS"
                 else
                     echo \"Whisper binary not found at \$WHISPER_BINARY_PATH\"
                     # List the contents of the current directory for debugging
