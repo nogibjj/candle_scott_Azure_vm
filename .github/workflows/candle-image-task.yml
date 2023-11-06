@@ -104,10 +104,10 @@ jobs:
                     fi
 
                     # Track the binary using Git LFS
-                    git lfs track "$(basename "$WHISPER_BINARY_PATH")"
+                    git lfs track "target/release/example/whisper"
 
                     # Add the binary to Git
-                    git add -f $(basename "$WHISPER_BINARY_PATH")
+                    git add -f target/release/example/whisper
 
                     git commit -m "Add whisper binary"
                     if git push origin main; then
