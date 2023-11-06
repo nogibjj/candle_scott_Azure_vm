@@ -68,9 +68,9 @@ jobs:
                 ls -al
 
                 # Check if whisper binary exists in the expected location
-                WHISPER_BINARY_PATH="$(pwd)/whisper"
+                WHISPER_BINARY_PATH=\"\$(pwd)/whisper\"
                 if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
-                    # chmod +x "$WHISPER_BINARY_PATH"
+                    chmod +x \"\$WHISPER_BINARY_PATH\"
                     # "$WHISPER_BINARY_PATH" || { echo 'Failed to run whisper'; exit 1; }
                     echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
 
@@ -104,10 +104,11 @@ jobs:
                     fi
 
                     # Track the binary using Git LFS
-                    git lfs track "target/release/example/whisper"
+                    # git lfs track "target/release/example/whisper"
+                    git lfs track "$(basename \"\$WHISPER_BINARY_PATH\")""
 
                     # Add the binary to Git
-                    git add -f target/release/example/whisper
+                    git add -f $(basename \"\$WHISPER_BINARY_PATH\")
 
                     git commit -m "Add whisper binary"
                     if git push origin main; then
