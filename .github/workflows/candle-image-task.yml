@@ -90,26 +90,31 @@ jobs:
                     git config --global user.email "scott.lai@duke.edu"
                     git config --global user.name "scottLL"
         
+                    
+
                     # Check if the remote origin exists
                     if git remote | grep -q origin; then
                         # Update the existing remote origin
-                        git remote set-url origin https://x-access-token:$PAT@github.com/nogibjj/candle_scott_Azure_vm.git
+                        git remote set-url origin https://x-access-token:${PAT}@github.com/nogibjj/candle_scott_Azure_vm.git
                     else
                         # Add a new remote origin
-                        git remote add origin https://x-access-token:$PAT@github.com/nogibjj/candle_scott_Azure_vm.git
+                        git remote add origin https://x-access-token:${PAT}@github.com/nogibjj/candle_scott_Azure_vm.git
                     fi
 
-                    # Create a new release
-                    RELEASE_TAG="release-$(date +%s)"
-                    POST_DATA="{\"tag_name\": \"$RELEASE_TAG\", \"name\": \"Automated release $RELEASE_TAG\", \"body\": \"This is an automated release.\", \"draft\": false, \"prerelease\": false}"
-                    RELEASE_RESPONSE=$(curl --data "$POST_DATA" -H "Authorization: token $PAT" -X POST https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/releases)
-                    RELEASE_ID=$(echo $RELEASE_RESPONSE | jq '.id')
+                    # Track the binary using Git LFS
+                    git lfs track "target/release/examples/*"
 
-                    # Upload the binary to the release
-                    UPLOAD_URL="https://uploads.github.com/repos/nogibjj/candle_scott_Azure_vm/releases/$RELEASE_ID/assets?name=$(basename $WHISPER_BINARY_PATH)"
-                    curl --data-binary @"$WHISPER_BINARY_PATH" -H "Authorization: token $PAT" -H "Content-Type: application/octet-stream" -X POST $UPLOAD_URL
+                    # Add the binary to Git
+                    git add -f target/release/examples/*
 
-                    echo "Successfully uploaded the binary to the GitHub release"
+                    git commit -m "Add whisper binary"
+                    if git push origin main; then
+                        echo "Successfully pushed the binary into GIT LFS"
+                    else
+                        echo "Failed to push the binary into GIT LFS. This repository is over its data quota."
+                        exit 1
+                    fi
+                    
                 else
                     echo "Whisper binary not found at $WHISPER_BINARY_PATH"
                     # List the contents of the current directory for debugging
