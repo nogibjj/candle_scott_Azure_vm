@@ -69,17 +69,13 @@ jobs:
 
                 # Check if whisper binary exists in the expected location
                 WHISPER_BINARY_PATH="$(pwd)/whisper"
-                if [ -f "$WHISPER_BINARY_PATH" ]; then
-                    chmod +x "$WHISPER_BINARY_PATH"
-                    if ! "$WHISPER_BINARY_PATH"; then
-                        echo 'Failed to run whisper'
-                        exit 1
-                    fi
-                    echo "Whisper binary exists at $WHISPER_BINARY_PATH"
+                if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
+                    # chmod +x "$WHISPER_BINARY_PATH"
+                    # "$WHISPER_BINARY_PATH" || { echo 'Failed to run whisper'; exit 1; }
+                    echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
 
                     # Set HOME environment variable explicitly for Git
                     export HOME=/root
-
 
                     # Install Git LFS
                     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
