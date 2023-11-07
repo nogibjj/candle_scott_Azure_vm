@@ -58,6 +58,14 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
 
+                # Define the absolute path of the whisper binary
+                WHISPER_BINARY_PATH="/var/lib/waagent/run-command/download/5/candle/target/release/examples/whisper"
+          
+                # Make sure the binary is executable
+                chmod +x "$WHISPER_BINARY_PATH"
+          
+                # Now call the binary using the absolute path
+                "$WHISPER_BINARY_PATH"
 
                 # Navigate to the build directory
                 cd target/release/examples
@@ -71,7 +79,7 @@ jobs:
                 ls -al
         
                 # Check if whisper binary exists in the expected location
-                WHISPER_BINARY_PATH=\"\$(pwd)/whisper\"
+                # WHISPER_BINARY_PATH=\"\$(pwd)/whisper\"
                 if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
                     echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
         
