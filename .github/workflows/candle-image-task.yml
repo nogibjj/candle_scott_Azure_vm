@@ -109,7 +109,7 @@ jobs:
     
                     # Add the binary to Git
                     git lfs track "target/release/examples/whisper"
-                    git add target/release/examples/whisper
+                    git add -f target/release/examples/whisper
     
                     # Add the .gitattributes file to Git
                     git add .gitattributes
