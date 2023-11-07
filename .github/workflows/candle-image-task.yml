@@ -59,11 +59,13 @@ jobs:
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
 
                 # Locate the whisper binary dynamically
-                WHISPER_BINARY_PATH=$(find /var/lib/waagent/run-command/download -type f -name whisper | head -n 1)
-                if [ -z \"$WHISPER_BINARY_PATH\" ]; then
+                # Locate the whisper binary dynamically
+                WHISPER_BINARY_PATH=$(sudo find /var/lib/waagent/run-command/download -type f -name whisper | head -n 1)
+                if [ -z "$WHISPER_BINARY_PATH" ]; then
                     echo 'Whisper binary not found.'
                     exit 1
                 fi
+
 
                 # Make sure the binary is executable
                 chmod +x \"$WHISPER_BINARY_PATH\"
