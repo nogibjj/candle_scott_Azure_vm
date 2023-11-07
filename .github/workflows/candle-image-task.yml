@@ -43,13 +43,6 @@ jobs:
                 echo \"CARGO_HOME: \$CARGO_HOME\";
                 echo \"RUSTUP_HOME: \$RUSTUP_HOME\";
 
-                # Add Rust executables to PATH
-                export PATH="$CARGO_HOME/bin:$PATH"
-                # Now you can directly use rustc and cargo without specifying the full path
-                rustc --version || echo 'rustc not found after installation.'
-                cargo build --example whisper --release || echo 'cargo build failed.'
-
-
                 # if [ -d \"\$CARGO_HOME/bin\" ]; then
                 #     echo '.cargo/bin directory exists.'
                 #     ls -alh \"\$CARGO_HOME/bin\"
@@ -78,67 +71,61 @@ jobs:
                 ls -al
         
                 # Check if whisper binary exists in the expected location
-                WHISPER_BINARY_PATH=\"\$(pwd)/whisper\"
-                if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
-                    echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
-        
+                WHISPER_BINARY_PATH="$(pwd)/whisper"
+                if [ -f "$WHISPER_BINARY_PATH" ]; then
+                    echo "Whisper binary exists at $WHISPER_BINARY_PATH"
+
                     # Set HOME environment variable explicitly for Git
                     export HOME=/root
-        
+
                     # Install Git LFS
                     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
                     apt-get install git-lfs
                     git lfs install
-        
+
                     # Navigate to the repository root
                     cd ../../../
-        
+
                     # Initialize the repository if not already done
                     git init
-        
+
                     # Configure Git with your name and email
                     git config --global user.email "scott.lai@duke.edu"
                     git config --global user.name "scottLL"
-        
-                    
-        
+
                     # Check if the remote origin exists
                     if git remote | grep -q origin; then
                         # Update the existing remote origin
-                        git remote set-url origin https://x-access-token:$***PAT***@github.com/nogibjj/candle_scott_Azure_vm.git
+                        git remote set-url origin https://github.com/nogibjj/candle_scott_Azure_vm.git
                     else
                         # Add a new remote origin
-                        git remote add origin https://x-access-token:$***PAT***@github.com/nogibjj/candle_scott_Azure_vm.git
+                        git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
                     fi
-        
-                    # Create or append to .gitattributes for LFS tracking
-                    # echo \"target/release/examples/* filter=lfs diff=lfs merge=lfs -text\" >> .gitattributes
-        
+
+                    # Create .gitattributes for LFS tracking
+                    echo "target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text" > .gitattributes
+
                     # Add the .gitattributes file to Git
-                   
-        
+                    git add .gitattributes
+
                     # Track the binary using Git LFS
                     git lfs track "target/release/examples/whisper"
 
                     # Add the binary to Git
                     git add -f target/release/examples/whisper
-                    git add .gitattributes
                     
+                    # Commit the changes
                     git commit -m "Add whisper binary"
-                    if git push origin main; then
-                        echo "Successfully pushed the binary into GIT LFS"
-                    else
-                        echo "Failed to push the binary into GIT LFS. This repository is over its data quota."
-                        exit 1
-                    fi
-        
+
+                    # Push to the remote repository
+                    git push origin main
+
                 else
                     echo "Whisper binary not found at $WHISPER_BINARY_PATH"
                     # List the contents of the current directory for debugging
                     ls -al
                     exit 1
                 fi
-                
                 " \
             --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
