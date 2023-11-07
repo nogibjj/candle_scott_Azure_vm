@@ -42,20 +42,30 @@ jobs:
                 RUSTUP_HOME='/root/.rustup'
                 echo \"CARGO_HOME: \$CARGO_HOME\";
                 echo \"RUSTUP_HOME: \$RUSTUP_HOME\";
-                if [ -d \"\$CARGO_HOME/bin\" ]; then
-                    echo '.cargo/bin directory exists.'
-                    ls -alh \"\$CARGO_HOME/bin\"
-                else
-                    echo '.cargo/bin directory NOT found.'
-                    exit 1
-                fi
-                # Using the bash shell to source the environment variables
-                /bin/bash -c \"source \$CARGO_HOME/env\"
-                echo \$PATH
-                /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
-                git clone https://github.com/huggingface/candle.git;
-                cd candle;
-                /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
+
+                # Add Rust executables to PATH
+                export PATH="$CARGO_HOME/bin:$PATH"
+                # Now you can directly use rustc and cargo without specifying the full path
+                rustc --version || echo 'rustc not found after installation.'
+                cargo build --example whisper --release || echo 'cargo build failed.'
+
+
+                # if [ -d \"\$CARGO_HOME/bin\" ]; then
+                #     echo '.cargo/bin directory exists.'
+                #     ls -alh \"\$CARGO_HOME/bin\"
+                # else
+                #     echo '.cargo/bin directory NOT found.'
+                #     exit 1
+                # fi
+                # # Using the bash shell to source the environment variables
+                # /bin/bash -c \"source \$CARGO_HOME/env\"
+                # echo \$PATH
+                # /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
+                # git clone https://github.com/huggingface/candle.git;
+                # cd candle;
+                # /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
+
+
                 # Navigate to the build directory
                 cd target/release/examples
                 ./whisper
