@@ -60,13 +60,13 @@ jobs:
 
                 # Define the whisper binary path based on the current working directory
                 
-                WHISPER_BINARY_PATH="$(pwd)/target/release/examples/whisper"
-                echo $WHISPER_BINARY_PATH
-                if [ -f $WHISPER_BINARY_PATH ]; then
-                    chmod +x $WHISPER_BINARY_PATH
-                    $WHISPER_BINARY_PATH || echo 'Whisper not find.'
+                WHISPER_BINARY_PATH=\"\$(pwd)\target\release\examples\whisper"
+                echo \"\$WHISPER_BINARY_PATH\"
+                if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
+                    chmod +x \"\$WHISPER_BINARY_PATH\"
+                    \"\$WHISPER_BINARY_PATH\" || echo 'Whisper not find.'
                 else
-                    echo "Whisper binary not found at $WHISPER_BINARY_PATH"
+                    echo \"Whisper binary not found at \$WHISPER_BINARY_PATH\"
                     exit 1
                 fi
 
