@@ -109,8 +109,8 @@ jobs:
                     # echo \"target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text\" > .gitattributes
         
                     # Add the binary to Git
-                    git lfs track "/target/release/examples/whisper"
-                    git add -f /target/release/examples/whisper
+                    git lfs track "target/release/examples/whisper"
+                    git add -f target/release/examples/whisper
         
                     # Add the .gitattributes file to Git
                     # git add .gitattributes
