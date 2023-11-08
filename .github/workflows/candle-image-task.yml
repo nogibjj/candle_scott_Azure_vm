@@ -59,9 +59,7 @@ jobs:
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
 
                 # Define the whisper binary path based on the current working directory
-                
-                WHISPER_BINARY_PATH=\"\$(pwd)\target\release\examples\whisper"
-                echo \"\$WHISPER_BINARY_PATH\"
+                WHISPER_BINARY_PATH=\"\$(pwd)/target/release/examples/whisper\"
                 if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
                     chmod +x \"\$WHISPER_BINARY_PATH\"
                     \"\$WHISPER_BINARY_PATH\" || echo 'Whisper not find.'
