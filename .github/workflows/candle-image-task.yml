@@ -113,19 +113,22 @@ jobs:
                     git add -f target/release/examples/whisper
         
                     # Add the .gitattributes file to Git
-                    # git add .gitattributes
-                    git status
+                    git add .gitattributes
+                    # git status
                     
                     # Commit the changes
                     git commit -m "Add whisper binary"
         
+                    git push origin main
+
+
                     # Push to the remote repository
-                    if git push -u origin main; then
-                        echo "Successfully pushed the binary into GIT LFS"
-                    else
-                        echo "Failed to push the binary into GIT LFS. This repository is over its data quota or there is an issue with LFS setup."
-                        exit 1
-                    fi
+                    # if git push -u origin main; then
+                        # echo "Successfully pushed the binary into GIT LFS"
+                    # else
+                    #     echo "Failed to push the binary into GIT LFS. This repository is over its data quota or there is an issue with LFS setup."
+                    #     exit 1
+                    # fi
         
                 else
                     echo "Whisper binary not found at $WHISPER_BINARY_PATH"
