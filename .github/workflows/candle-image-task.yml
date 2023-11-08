@@ -62,6 +62,7 @@ jobs:
                 # Navigate to the build directory
                 cd target/release/examples
                 ./whisper
+
                 # Confirm current directory
                 echo \"Current directory:\"
                 pwd
@@ -108,11 +109,12 @@ jobs:
                     # echo \"target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text\" > .gitattributes
         
                     # Add the binary to Git
-                    git lfs track "$(pwd)/whisper"
-                    git add -f $(pwd)/whisper
+                    git lfs track "/target/release/examples/whisper"
+                    git add -f /target/release/examples/whisper
         
                     # Add the .gitattributes file to Git
-                    git add .gitattributes
+                    # git add .gitattributes
+                    git status
                     
                     # Commit the changes
                     git commit -m "Add whisper binary"
