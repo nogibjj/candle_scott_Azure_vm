@@ -114,17 +114,18 @@ jobs:
         
                     # # Add the .gitattributes file to Git
                     git add .gitattributes
+
                     # git status
                     
                     # # Commit the changes
-                    git commit -m "Add whisper binary"
+                    git commit -am "Add whisper binary"
         
-                    # git push -u origin main
+                    git push -u origin main
 
 
                     # git add target/release/examples/whisper
                     # git commmit -am "add whisper binary"
-                    git push 
+                    # git push 
 
 
 
