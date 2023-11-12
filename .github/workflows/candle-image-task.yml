@@ -13,7 +13,6 @@ jobs:
   run-candle-image-task:
     runs-on: ubuntu-latest
     steps:
-
     - name: Azure Login
       uses: azure/login@v1
       with:
@@ -35,115 +34,46 @@ jobs:
                 # Install C compiler and related tools
                 apt-get update
                 apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq
-                # Now install Rust
-                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
-                echo 'Checking installation...'
-                CARGO_HOME='/root/.cargo'
-                RUSTUP_HOME='/root/.rustup'
-                echo \"CARGO_HOME: \$CARGO_HOME\";
-                echo \"RUSTUP_HOME: \$RUSTUP_HOME\";
-        
-                if [ -d \"\$CARGO_HOME/bin\" ]; then
-                    echo '.cargo/bin directory exists.'
-                    ls -alh \"\$CARGO_HOME/bin\"
-                else
-                    echo '.cargo/bin directory NOT found.'
-                    exit 1
-                fi
-                # Using the bash shell to source the environment variables
-                /bin/bash -c \"source \$CARGO_HOME/env\"
-                echo \$PATH
-                /root/.cargo/bin/rustc --version || echo 'rustc not found after installation.'
-                git clone https://github.com/huggingface/candle.git;
-                cd candle;
-                /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
-        
-        
+
+                # Check available disk space
+                df -h
+
+                # Install Rust
+                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+                source /root/.cargo/env
+                rustc --version || { echo 'Rust installation failed'; exit 1; }
+                cargo --version || { echo 'Cargo installation failed'; exit 1; }
+
+                # Clone and build the project
+                git clone https://github.com/huggingface/candle.git
+                cd candle
+                cargo build --example whisper --release || { echo 'cargo build failed'; exit 1; }
+
                 # Navigate to the build directory
                 cd target/release/examples
-                ./whisper
-
-                # Confirm current directory
-                echo \"Current directory:\"
-                pwd
-        
-                # List contents of the directory
-                echo \"Listing contents of \$(pwd):\"
-                ls -al
-        
-                # Check if whisper binary exists in the expected location
-                WHISPER_BINARY_PATH=\"\$(pwd)/whisper\"
-                if [ -f \"\$WHISPER_BINARY_PATH\" ]; then
-                    echo \"Whisper binary exists at \$WHISPER_BINARY_PATH\"
-        
-                    # Set HOME environment variable explicitly for Git
-                    export HOME=/root
-        
-                    # Install Git LFS
-                    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
-                    apt-get install git-lfs
-                    git lfs install
-        
-                    # Navigate to the repository root
-                    cd ../../../
-        
-                    # Initialize the repository if not already done
-                    git init
-        
-                    # Configure Git with your name and email
-                    git config --global user.email "scott.lai@duke.edu"
-                    git config --global user.name "scottLL"
-        
-                    
-        
-                    # Check if the remote origin exists
-                    if git remote | grep -q origin; then
-                        # Update the existing remote origin
-                        git remote set-url origin ***github.com/nogibjj/candle_scott_Azure_vm.git
-                    else
-                        # Add a new remote origin
-                        git remote add origin ***github.com/nogibjj/candle_scott_Azure_vm.git
-                    fi
-        
-                    # Create or append to .gitattributes for LFS tracking
-                    # echo \"target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text\" > .gitattributes
-        
-                    # Add the binary to Git
-                    git lfs track "target/release/examples/whisper"
-                    git add -f target/release/examples/whisper
-        
-                    # # Add the .gitattributes file to Git
-                    git add .gitattributes
-
-                    # git status
-                    
-                    # # Commit the changes
-                    git commit -am "Add whisper binary"
-        
-                    # git push -u origin main
-
-
-                    # git add target/release/examples/whisper
-                    # git commmit -am "add whisper binary"
-                    git push 
-
-
-
-                    # Push to the remote repository
-                    # if git push -u origin main; then
-                        # echo "Successfully pushed the binary into GIT LFS"
-                    # else
-                    #     echo "Failed to push the binary into GIT LFS. This repository is over its data quota or there is an issue with LFS setup."
-                    #     exit 1
-                    # fi
-        
+                if [ -f whisper ]; then
+                    echo 'Whisper binary compiled successfully'
                 else
-                    echo "Whisper binary not found at $WHISPER_BINARY_PATH"
-                    # List the contents of the current directory for debugging
-                    ls -al
+                    echo 'Whisper binary compilation failed'
                     exit 1
                 fi
-                
+
+                # Git and LFS setup
+                export HOME=/root
+                curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+                apt-get install git-lfs
+                git lfs install
+                git init
+                git config --global user.email \"scott.lai@duke.edu\"
+                git config --global user.name \"scottLL\"
+                git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
+
+                # Track and commit LFS files
+                echo \"target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text\" > .gitattributes
+                git lfs track \"target/release/examples/whisper\"
+                git add target/release/examples/whisper .gitattributes
+                git commit -m 'Add whisper binary'
+                git push -u origin main || { echo 'Failed to push the binary to Git LFS'; exit 1; }
                 " \
             --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
