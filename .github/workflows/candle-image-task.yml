@@ -40,7 +40,20 @@ jobs:
 
                 # Install Rust
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-                source /root/.cargo/env
+                CARGO_HOME='/root/.cargo'
+                RUSTUP_HOME='/root/.rustup'
+                echo \"CARGO_HOME: \$CARGO_HOME\"
+                echo \"RUSTUP_HOME: \$RUSTUP_HOME\"
+
+                if [ -d \"\$CARGO_HOME/bin\" ]; then
+                    echo '.cargo/bin directory exists.'
+                    ls -alh \"\$CARGO_HOME/bin\"
+                else
+                    echo '.cargo/bin directory NOT found.'
+                    exit 1
+                fi
+
+                /bin/bash -c \"source \$CARGO_HOME/env\"
                 rustc --version || { echo 'Rust installation failed'; exit 1; }
                 cargo --version || { echo 'Cargo installation failed'; exit 1; }
 
