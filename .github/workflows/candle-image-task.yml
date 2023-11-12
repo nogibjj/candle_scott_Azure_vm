@@ -54,6 +54,8 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
 
+                # Store the path of the project directory
+                PROJECT_DIR=$(pwd)
 
                 # Navigate to the build directory
                 cd target/release/examples
@@ -74,10 +76,14 @@ jobs:
                 git config --global user.name \"scottLL\"
                 git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
 
+                # Check if you are in the correct directory
+                echo "Current directory: $(pwd)"
+
+
                 # Track and commit LFS files
-                echo \"target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text\" > .gitattributes
-                git lfs track \"target/release/examples/whisper\"
-                git add target/release/examples/whisper .gitattributes
+                echo \"target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text\" > $PROJECT_DIR/.gitattributes
+                git lfs track "$PROJECT_DIR/target/release/examples/whisper"
+                git add $PROJECT_DIR/target/release/examples/whisper $PROJECT_DIR/.gitattributes
                 git commit -m 'Add whisper binary'
                 git push -u origin main || { echo 'Failed to push the binary to Git LFS'; exit 1; }
                 " \
