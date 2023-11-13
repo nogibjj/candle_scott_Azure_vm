@@ -98,12 +98,12 @@ jobs:
                 # git status
 
                 # Navigate to the directory where the whisper binary is located
-                cd /home/runner
-                ls
-                cd /home/runner/work/
-                ls
-                cd /home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm
-                ls
+                ls -l /home/runner
+                ls -l /home/runner/work/
+                ls -l /home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm
+                
+
+                
                 
 
                 # Now add the whisper binary to Git
