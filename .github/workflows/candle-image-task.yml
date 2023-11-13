@@ -92,15 +92,19 @@ jobs:
                 echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
                 git lfs track "target/release/examples/whisper"
 
-                # Debugging: Check current directory and git status
-                echo 'Current directory before git add:'
-                pwd
-                git status
+                # # Debugging: Check current directory and git status
+                # echo 'Current directory before git add:'
+                # pwd
+                # git status
 
+                # Navigate to the directory where the whisper binary is located
+                cd /home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm/candle/target/release/examples
 
-                git add target/release/examples/whisper .gitattributes
+                # Now add the whisper binary to Git
+                git add whisper
                 git commit -m 'Add whisper binary'
                 git push -u origin main
+                
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
