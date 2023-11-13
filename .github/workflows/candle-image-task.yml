@@ -30,23 +30,23 @@ jobs:
             --scripts "
                 #!/bin/bash
                 set -e
-
+        
                 # Stop unattended upgrades temporarily
                 sudo systemctl stop unattended-upgrades
-
+        
                 # Install C compiler and related tools
                 apt-get update
                 apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq
-
+        
                 # Git and LFS setup
                 export HOME=/root
                 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
                 apt-get install git-lfs
                 git lfs install
-
+        
                 # Check available disk space
                 df -h
-
+        
                 # Install Rust
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y;
                 echo 'Checking installation...'
@@ -54,7 +54,7 @@ jobs:
                 RUSTUP_HOME='/root/.rustup'
                 echo \"CARGO_HOME: \$CARGO_HOME\";
                 echo \"RUSTUP_HOME: \$RUSTUP_HOME\";
-
+        
                 # Using the bash shell to source the environment variables
                 /bin/bash -c \"source \$CARGO_HOME/env\"
                 echo \$PATH
@@ -63,55 +63,50 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 ls -l target/release/examples
-
+        
                 # Store the path of the project directory
                 PROJECT_DIR=$(pwd)
                 echo 'Project directory:' "$PROJECT_DIR"
-
+        
                 # Navigate to the build directory
-                cd target/release/examples || { echo "Failed to change directory"; exit 1; }
+                cd target/release/examples || *** echo "Failed to change directory"; exit 1; ***
                 echo 'Current directory:' "$(pwd)"
-
+        
                 if [ -f whisper ]; then
                     echo 'Whisper binary compiled successfully'
                 else
                     echo 'Whisper binary compilation failed'
                     exit 1
                 fi
-
-
+        
+        
                 # Navigate back to the project root
                 cd "$PROJECT_DIR"
-
+        
                 git init
                 git config --global user.email "scott.lai@duke.edu"
                 git config --global user.name "scottLL"
                 git remote set-url origin https://github.com/nogibjj/candle_scott_Azure_vm.git
-
+        
                 # Track and commit LFS files
                 echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
                 git lfs track "target/release/examples/whisper"
-
+        
                 # # Debugging: Check current directory and git status
                 # echo 'Current directory before git add:'
                 # pwd
                 # git status
-
+        
                 # Navigate to the directory where the whisper binary is located
-                ls -l /home/runner
-                ls -l /home/runner/work/
-                ls -l /home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm
-                
-
-                
-                
+                # cd /home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm/candle/target/release/examples
+                ls -l home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm
 
                 # Now add the whisper binary to Git
                 git add whisper
                 git commit -m 'Add whisper binary'
                 git push -u origin main
-
+                
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
-        echo "$OUTPUT"
+      
