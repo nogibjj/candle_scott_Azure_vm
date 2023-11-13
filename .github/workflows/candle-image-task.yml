@@ -62,12 +62,23 @@ jobs:
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
-                ls -l target/release/examples
-                pwd
-                # Store the path of the project directory
-                PROJECT_DIR=$(pwd)
-                echo 'Project directory:' "$PROJECT_DIR"
+                # ls -l target/release/examples
+                # pwd
+                # # Store the path of the project directory
+                # PROJECT_DIR=$(pwd)
+                # echo 'Project directory:' "$PROJECT_DIR"
         
+
+                # Dynamically find the project directory and store it
+                PROJECT_DIR=$(find / -type d -name "candle" 2>/dev/null | grep 'waagent/run-command/download')
+                echo "Project directory: $PROJECT_DIR"
+
+                # Navigate to the binary directory
+                BINARY_DIR="$PROJECT_DIR/target/release/examples"
+                echo "Binary directory: $BINARY_DIR"
+                cd "$BINARY_DIR" || { echo "Failed to change directory to $BINARY_DIR"; exit 1; }
+
+
                 # Navigate to the build directory
                 cd target/release/examples || *** echo "Failed to change directory"; exit 1; ***
                 echo 'Current directory:' "$(pwd)"
