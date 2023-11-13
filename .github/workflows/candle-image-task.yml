@@ -38,6 +38,12 @@ jobs:
                 apt-get update
                 apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq
 
+                # Git and LFS setup
+                export HOME=/root
+                curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+                apt-get install git-lfs
+                git lfs install
+
                 # Check available disk space
                 df -h
 
@@ -73,11 +79,6 @@ jobs:
                     exit 1
                 fi
 
-                # Git and LFS setup
-                export HOME=/root
-                curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
-                apt-get install git-lfs
-                git lfs install
 
                 # Navigate back to the project root
                 cd "$PROJECT_DIR"
@@ -90,6 +91,13 @@ jobs:
                 # Track and commit LFS files
                 echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
                 git lfs track "target/release/examples/whisper"
+
+                # Debugging: Check current directory and git status
+                echo 'Current directory before git add:'
+                pwd
+                git status
+
+
                 git add target/release/examples/whisper .gitattributes
                 git commit -m 'Add whisper binary'
                 git push -u origin main
