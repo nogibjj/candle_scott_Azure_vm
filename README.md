@@ -83,3 +83,20 @@ Now you are ready to create the image. Run it manually and make sure it works co
 ```
 az image list --resource-group githubVM --output table
 ```
+
+
+### choice the VM size 
+
+```
+ az vm list-sizes --location eastus --query "[].name" -o tsv
+```
+
+```
+az vm list-sizes --location eastus --query "[].name" -o tsv | grep A100
+```
+
+```
+az vm image list-skus --location eastus --publisher nvidia --offer nvidia_hpc_sdk_vmi
+```
+
+find out the image-source in [here](https://az-vm-image.info/?cmd=--all)

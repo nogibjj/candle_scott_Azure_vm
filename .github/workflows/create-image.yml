@@ -20,10 +20,11 @@ jobs:
         location: 'eastus'
         managed-identity: 'GitHubVMs'
         source-os-type: 'linux'
-        vm-size: "Standard_D2s_v3"
-        # vm-size: "Standard_ND96amsr_A100_v4"
+        # vm-size: "Standard_D2s_v3"
+        vm-size: "Standard_NC96ads_A100_v4"
         source-image-type: 'platformimage'
-        source-image: Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest
+        # source-image: Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest
+        source-image: nvidia:nvidia_hpc_sdk_vmi:nvidia_hpc_sdk_vmi_23_03_0_gen2:23.03.0
         customizer-source: ${{ github.workspace }}/workflow-artifacts
         customizer-script: |
           ls -l /tmp/
