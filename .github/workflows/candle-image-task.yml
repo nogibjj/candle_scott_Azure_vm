@@ -31,6 +31,10 @@ jobs:
             --scripts "
                 #!/bin/bash
                 set -e
+
+                # Stop unattended upgrades temporarily
+                sudo systemctl stop unattended-upgrades
+
                 # Install C compiler and related tools
                 apt-get update
                 apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq
