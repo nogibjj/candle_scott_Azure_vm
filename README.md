@@ -100,3 +100,14 @@ az vm image list-skus --location eastus --publisher nvidia --offer nvidia_hpc_sd
 ```
 
 find out the image-source in [here](https://az-vm-image.info/?cmd=--all)
+
+
+```
+az vm image list --architecture x64 --publisher nvidia --all --output table
+```
+
+check out the purchase plan
+```
+az vm image show --location eastus --urn nvidia:nvidia_hpc_sdk_vmi:nvidia_hpc_sdk_vmi_23_03_0_gen2:23.03.0
+```
+
