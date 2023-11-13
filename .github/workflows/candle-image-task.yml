@@ -77,13 +77,14 @@ jobs:
                 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
                 apt-get install git-lfs
                 git lfs install
+
+                # Navigate back to the project root
+                cd "$PROJECT_DIR"
+
                 git init
                 git config --global user.email "scott.lai@duke.edu"
                 git config --global user.name "scottLL"
                 git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
-
-                # Navigate back to the project root
-                cd "$PROJECT_DIR"
 
                 # Track and commit LFS files
                 echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
