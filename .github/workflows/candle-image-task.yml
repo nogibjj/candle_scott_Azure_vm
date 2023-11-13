@@ -109,4 +109,5 @@ jobs:
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
+        echo "$OUTPUT"
       
