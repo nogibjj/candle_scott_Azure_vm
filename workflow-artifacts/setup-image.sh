@@ -1,35 +1,54 @@
+#!/bin/bash
+#
+# Setup the runner to have the Azure CLI, Rust, and Candle pre-installed
+set -e
+# Define a working directory
+WORK_DIR="/opt/actions-runner"
+
+# Update system packages
+apt-get update
+
+# Install necessary packages
+apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler git curl
+
+
+# Install Rust using rustup
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Ensure the cargo/bin directory is in PATH
+source $HOME/.cargo/env
+
+# Clone the candle repository
+git clone https://github.com/huggingface/candle.git /opt/candle
+
+# Install Azure CLI without using sudo
+curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+# Create a folder for the actions runner and download the package
+mkdir -p $WORK_DIR
+cd $WORK_DIR
+curl -O -L https://github.com/actions/runner/releases/download/v2.310.2/actions-runner-linux-x64-2.310.2.tar.gz
+tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
+
+# Cleaning up unnecessary files to save space
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+
+
+
+
 # #!/bin/bash
 # #
-# # Setup the runner to have the Azure CLI, Rust, and Candle pre-installed
+# # Setup the runner to have the Azure CLI pre-installed as well as the Actions
+# # Runner
 
 # # Define a working directory
 # WORK_DIR="/opt/actions-runner"
 
-# # Update system packages
-# apt-get update
-
-# # Install necessary packages
-# apt-get install -y \
-#   build-essential \
-#   pkg-config \
-#   libssl-dev \
-#   protobuf-compiler \
-#   git \
-#   curl
-
-# # Install Rust using rustup
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# # Ensure the cargo/bin directory is in PATH
-# source $HOME/.cargo/env
-
-# # Clone the candle repository
-# git clone https://github.com/huggingface/candle.git /opt/candle
-
-# # Install Azure CLI without using sudo as it may not be available in all environments
+# # Install Azure CLI, should not use sudo
 # curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-# # Create a folder for the actions runner
+# # Create a folder
 # mkdir -p $WORK_DIR && cd $WORK_DIR
 
 # # Download the latest runner package
@@ -37,30 +56,6 @@
 
 # # Extract the installer
 # tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
-
-
-
-
-
-#!/bin/bash
-#
-# Setup the runner to have the Azure CLI pre-installed as well as the Actions
-# Runner
-
-# Define a working directory
-WORK_DIR="/opt/actions-runner"
-
-# Install Azure CLI, should not use sudo
-curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-
-# Create a folder
-mkdir -p $WORK_DIR && cd $WORK_DIR
-
-# Download the latest runner package
-curl -O -L https://github.com/actions/runner/releases/download/v2.310.2/actions-runner-linux-x64-2.310.2.tar.gz
-
-# Extract the installer
-tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
 
 
 
