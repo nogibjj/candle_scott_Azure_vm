@@ -20,7 +20,7 @@ jobs:
         
     - name: Run Candle Image Task
       env:
-        STORAGE_ACCOUNT_KEY: ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        # STORAGE_ACCOUNT_KEY: ${{ secrets.STORAGE_ACCOUNT_KEY }}
         PAT: ${{ secrets.PAT }}
       run: |
         VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
@@ -87,13 +87,13 @@ jobs:
                 cd "$PROJECT_DIR"
 
                 # Track and commit LFS files
-                echo "target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text" > .gitattributes
+                echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
                 git lfs track "target/release/examples/whisper"
                 git add target/release/examples/whisper .gitattributes
                 git commit -m 'Add whisper binary'
                 git push -u origin main || { echo 'Failed to push the binary to Git LFS'; exit 1; }
                 " \
-            --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
+            # --parameters STORAGE_ACCOUNT_KEY="$STORAGE_ACCOUNT_KEY" \
             --query "value[].message" --output tsv)
         echo "Command Output:"
         echo "$OUTPUT"
