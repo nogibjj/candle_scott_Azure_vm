@@ -60,13 +60,12 @@ jobs:
 
                 # Store the path of the project directory
                 PROJECT_DIR=$(pwd)
-                echo "Project directory: $PROJECT_DIR"
-
+                echo 'Project directory:' "$PROJECT_DIR"
 
                 # Navigate to the build directory
                 cd target/release/examples || { echo "Failed to change directory"; exit 1; }
-                echo "Current directory: $(pwd)"
-                
+                echo 'Current directory:' "$(pwd)"
+
                 if [ -f whisper ]; then
                     echo 'Whisper binary compiled successfully'
                 else
