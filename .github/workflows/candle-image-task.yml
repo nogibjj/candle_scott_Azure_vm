@@ -83,7 +83,7 @@ jobs:
                 git config --global user.name "scottLL"
                 git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
 
-                # Ensure we're at the root of the git project
+                # Navigate back to the project root
                 cd "$PROJECT_DIR"
 
                 # Track and commit LFS files
