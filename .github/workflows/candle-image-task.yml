@@ -63,7 +63,7 @@ jobs:
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
                 ls -l target/release/examples
-        
+                pwd
                 # Store the path of the project directory
                 PROJECT_DIR=$(pwd)
                 echo 'Project directory:' "$PROJECT_DIR"
@@ -78,7 +78,6 @@ jobs:
                     echo 'Whisper binary compilation failed'
                     exit 1
                 fi
-        
         
                 # Navigate back to the project root
                 cd "$PROJECT_DIR"
@@ -105,7 +104,6 @@ jobs:
                 git add whisper
                 git commit -m 'Add whisper binary'
                 git push -u origin main
-                
                 " \
             --query "value[].message" --output tsv)
         echo "Command Output:"
