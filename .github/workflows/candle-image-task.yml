@@ -87,9 +87,9 @@ jobs:
                 git remote set-url origin https://github.com/nogibjj/candle_scott_Azure_vm.git
 
                 # Track and commit LFS files
-                echo '/home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm/candle/target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
-                git lfs track "/home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm/candle/target/release/examples/whisper"
-                git add /home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm/candle/target/release/examples/whisper .gitattributes
+                echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
+                git lfs track "target/release/examples/whisper"
+                git add target/release/examples/whisper .gitattributes
                 git commit -m 'Add whisper binary'
                 git push -u origin main
                 " \
