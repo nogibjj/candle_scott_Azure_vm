@@ -56,6 +56,7 @@ jobs:
                 git clone https://github.com/huggingface/candle.git;
                 cd candle;
                 /root/.cargo/bin/cargo build --example whisper --release || echo 'cargo build failed.';
+                ls -l target/release/examples
 
                 # Store the path of the project directory
                 PROJECT_DIR=$(pwd)
