@@ -89,28 +89,28 @@ tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
 # echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $HOME/.profile
 # source $HOME/.profile
 
-#!/bin/bash
-set -e
+# #!/bin/bash
+# set -e
 
-# Updating system packages
-apt-get update
+# # Updating system packages
+# apt-get update
 
-# Installing necessary dependencies
-apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq git-lfs
+# # Installing necessary dependencies
+# apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq git-lfs
 
-# Setting up Git LFS
-git lfs install
+# # Setting up Git LFS
+# git lfs install
 
-# Installing Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-source "$HOME/.cargo/env"
+# # Installing Rust
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# source "$HOME/.cargo/env"
 
-# Cloning the necessary repository
-git clone https://github.com/huggingface/candle.git
-cd candle
+# # Cloning the necessary repository
+# git clone https://github.com/huggingface/candle.git
+# cd candle
 
-# Building the project
-cargo build --example whisper --release || echo 'Cargo build failed.'
+# # Building the project
+# cargo build --example whisper --release || echo 'Cargo build failed.'
 
 
 # # Define the binary directory based on the project directory
