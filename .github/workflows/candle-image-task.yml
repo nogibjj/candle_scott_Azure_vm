@@ -98,9 +98,11 @@ jobs:
                 # git status
 
                 # Navigate to the directory where the whisper binary is located
+                cd /home/runner
+                ls
+                cd /home/runner/work/
+                ls
                 cd /home/runner/work/candle_scott_Azure_vm/candle_scott_Azure_vm
-                ls 
-                cd candle 
                 ls
                 
 
