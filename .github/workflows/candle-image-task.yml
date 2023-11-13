@@ -80,8 +80,8 @@ jobs:
                 git config --global user.name \"scottLL\"
                 git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
 
-                # Check if you are in the correct directory
-                echo "Current directory: $(pwd)"
+                # # Check if you are in the correct directory
+                # echo "Current directory: $(pwd)"
 
 
                 # Track and commit LFS files
