@@ -12,3 +12,26 @@ su - runner -c "$WORK_DIR/config.sh --unattended --url https://github.com/nogibj
 # Schedule the runner to start immediately but in the background
 nohup su - runner -c "$WORK_DIR/run.sh" &
 
+# Additional setup
+apt-get update
+apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq git-lfs
+
+git lfs install
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
+
+git clone https://github.com/huggingface/candle.git
+cd candle
+cargo build --example whisper --release || echo 'Cargo build failed.'
+
+# Navigate to the binary directory
+git init
+git config --global user.email "scott.lai@duke.edu"
+git config --global user.name "scottLL"
+git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
+echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
+git lfs track "target/release/examples/whisper"
+git add whisper .gitattributes
+git commit -m 'Add whisper binary'
+git push -u origin main
