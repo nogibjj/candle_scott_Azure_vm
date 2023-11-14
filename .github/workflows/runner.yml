@@ -32,6 +32,10 @@ jobs:
           echo "Modification with sed failed."
           exit 1
         fi
+    - name: Prepare cloud-init
+      run: |
+        sed -i "s/\$GITHUB_TOKEN/${{ secrets.PAT }}/" workflow-artifacts/cloud-init.txt
+
 
     - name: Login via Az module
       uses: azure/login@v1
