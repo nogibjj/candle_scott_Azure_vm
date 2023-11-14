@@ -31,26 +31,12 @@ cd /root/candle
 
 # Building the project
 if cargo build --example whisper --release; then
-  # Navigate back to the root of the candle project
-  cd /root/candle
-
-  # Git configuration and committing the binary
-  git init
-  git checkout -b main
-  git config --global user.email "scott.lai@duke.edu"
-  git config --global user.name "scottLL"
-  git remote add origin https://github.com/nogibjj/candle_scott_Azure_vm.git
-
-  # Set up .gitattributes for LFS
-  echo 'target/release/examples/whisper filter=lfs diff=lfs merge=lfs -text' > .gitattributes
-  git lfs track "target/release/examples/whisper"
-
-  # Add and commit changes
-  git add target/release/examples/whisper .gitattributes
-  git commit -m 'Add whisper binary'
-  
-  # Push to the main branch
-  git push -u origin main
+  # Binary built, trigger a workflow to create a release and upload the binary
+  curl -X POST \
+    -H "Authorization: token $GITHUB_TOKEN" \
+    -H "Accept: application/vnd.github.v3+json" \
+    "https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/actions/workflows/release.yml/dispatches" \
+    -d '{"ref": "main"}'
 else
   echo "Cargo build failed."
 fi

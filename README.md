@@ -111,3 +111,16 @@ check out the purchase plan
 az vm image show --location eastus --urn nvidia:nvidia_hpc_sdk_vmi:nvidia_hpc_sdk_vmi_23_03_0_gen2:23.03.0
 ```
 
+
+
+
+## create the github release
+
+```
+GITHUB_TOKEN="your_github_token"
+REPO="username/repo"  # Replace with your GitHub username and repo name
+TAG="v1.0.0"          # Replace with your tag version
+RELEASE_NAME="Release Title"
+
+```
+
