@@ -32,6 +32,7 @@ cd /root/candle
 # Building the project
 if cargo build --example whisper --release; then
   # Binary built, trigger a workflow to create a release and upload the binary
+  sudo -i
   curl -X POST \
     -H "Authorization: token $GITHUB_TOKEN" \
     -H "Accept: application/vnd.github.v3+json" \
