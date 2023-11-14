@@ -1,0 +1,53 @@
+name: Azure Binary to Git Releaase
+
+on: 
+  workflow_dispatch:
+  repository_dispatch:
+    types: [Git-release-task]
+
+
+jobs:
+    release-binary:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+  
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set up variables
+        run: |
+            echo "TAG=v$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+            echo "RELEASE_NAME=CPU Whisper Binary Release" >> $GITHUB_ENV
+
+
+      - name: Create and Upload Release
+        run: |
+          GITHUB_TOKEN="${{ secrets.PAT }}"
+          REPO="nogibjj/candle_scott_Azure_vm"  # Replace with your GitHub username and repo name
+          TAG="${{ env.TAG }}"         
+          RELEASE_NAME="${{ env.RELEASE_NAME }}"
+
+  
+          CREATE_RELEASE_RESPONSE=$(curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"tag_name\": \"$TAG\", \"name\": \"$RELEASE_NAME\"}" \
+            "https://api.github.com/repos/$REPO/releases")
+  
+          UPLOAD_URL=$(echo $CREATE_RELEASE_RESPONSE | jq -r .upload_url | sed "s/{?name,label}//")
+          FILE="whisper"  # Replace with your binary file name
+          MIME_TYPE=$(file -b --mime-type "$FILE")
+  
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: $MIME_TYPE" \
+            --data-binary @"$FILE" \
+            "$UPLOAD_URL?name=$(basename "$FILE")"
+        env:
+          PAT: ${{ secrets.PAT }}
+  

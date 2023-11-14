@@ -18,17 +18,5 @@ export PATH="$HOME/.cargo/bin:$PATH"
 git clone https://github.com/huggingface/candle.git /root/candle
 cd /root/candle
 
-if cargo build --example whisper --release; then
-    FILE="/root/candle/target/release/examples/whisper"
-    MIME_TYPE=$(file -b --mime-type "$FILE")
-    TAG="v$(date +%Y%m%d%H%M%S)"
-    RELEASE_NAME="CPU Whisper Binary Release"
-    GITHUB_TOKEN=$(cat /var/lib/cloud/instance/secrets/PAT)  # Load token from a secure location
+cargo build --example whisper --release
 
-    CREATE_RELEASE_RESPONSE=$(curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" -d "{\"tag_name\": \"$TAG\", \"name\": \"$RELEASE_NAME\"}" "https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/releases")
-    UPLOAD_URL=$(echo $CREATE_RELEASE_RESPONSE | jq -r .upload_url | sed "s/{?name,label}//")
-
-    curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: $MIME_TYPE" --data-binary @"$FILE" "$UPLOAD_URL?name=$(basename "$FILE")"
-else
-    echo "Cargo build failed."
-fi
