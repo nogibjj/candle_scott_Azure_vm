@@ -37,6 +37,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: candle/target/release/examples/whisper
+          asset_path: /root/candle/target/release/examples
           asset_name: whisper
           asset_content_type: application/octet-stream
