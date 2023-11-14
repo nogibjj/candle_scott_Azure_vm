@@ -31,12 +31,14 @@ jobs:
       - name: Create and Upload Release
         run: |
           VM_NAME="${{ github.event.client_payload.vm_name || github.event.inputs.vm_name }}"
+          sudo -i 
+          cd /root/candle/target/release/examples
           GITHUB_TOKEN="${{ secrets.PAT }}"
           REPO="nogibjj/candle_scott_Azure_vm"  # Replace with your GitHub username and repo name
           TAG="${{ env.TAG }}"         
           RELEASE_NAME="${{ env.RELEASE_NAME }}"
 
-  
+        
           CREATE_RELEASE_RESPONSE=$(curl -X POST \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: application/json" \
