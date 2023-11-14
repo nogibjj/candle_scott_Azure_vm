@@ -25,6 +25,10 @@ git lfs install
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# Cloning the necessary repository
+git clone https://github.com/huggingface/candle.git /root/candle
+cd /root/candle
+
 # Building the project
 if cargo build --example whisper --release; then
   # Navigate back to the root of the candle project
