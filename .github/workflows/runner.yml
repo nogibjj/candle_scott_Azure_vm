@@ -12,13 +12,21 @@ jobs:
       run: |
         set -e
         RUNNER_TOKEN=$(curl -f -X POST \
-                         -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                         -H "Authorization: token ${{ secrets.PAT }}" \
                          -H "Accept: application/vnd.github.v3+json" \
                          https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/actions/runners/registration-token | grep token | cut -d '"' -f 4)
+        echo $RUNNER_TOKEN
+        if [ -z "$RUNNER_TOKEN" ]; then
+          echo "Failed to retrieve the runner token."
+          exit 1
+        fi
         echo "RUNNER_TOKEN=$RUNNER_TOKEN" >> $GITHUB_ENV
+      env:
+        PAT: ${{ secrets.PAT }}
 
     - name: Modify cloud-init.txt
       run: |
+        set -e
         sed -i "2iRUNNER_TOKEN=$RUNNER_TOKEN" workflow-artifacts/cloud-init.txt
         if ! grep -q "RUNNER_TOKEN=$RUNNER_TOKEN" workflow-artifacts/cloud-init.txt; then
           echo "Modification with sed failed."
@@ -31,24 +39,48 @@ jobs:
         creds: ${{secrets.AZURE_CREDENTIALS}}
 
     - name: Find the latest image URI
+      id: find_image
       uses: azure/CLI@v1
       with:
         inlineScript: |
           IMAGE_URI=$(az image list --resource-group githubVM --query "[-1].id" --output tsv)
           echo "::set-output name=image_uri::$IMAGE_URI"
 
+
     - name: CREATE VM
+      id: create_vm
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          az vm create --resource-group githubVM \
-          --name "app-vm-${{ GITHUB.RUN_NUMBER }}" \
-          --admin-username "runner" \
-          --admin-password "${{ secrets.VM_PASSWORD }}" \
-          --location eastus --custom-data workflow-artifacts/cloud-init.txt \
+          az vm create --resource-group githubVM  --name "app-vm-${{ GITHUB.RUN_NUMBER }}"  --admin-username "runner" --admin-password "${{ secrets.VM_PASSWORD }}" --location  eastus \
+          --custom-data workflow-artifacts/cloud-init.txt \
           --image "${{ steps.find_image.outputs.image_uri }}" \
           --generate-ssh-keys
-      id: create_vm
 
+    # At the end of your CREATE VM step
     - name: Set VM Name Output
       run: echo "::set-output name=vm_name::app-vm-${{ GITHUB.RUN_NUMBER }}"
+      id: vm_name
+
+
+
+    # - name: Trigger Candle Image Task Workflow
+    #   uses: peter-evans/repository-dispatch@v1
+    #   with:
+    #     token: ${{ secrets.PAT }}
+    #     repository: owner/repo # Replace with your repository
+    #     event-type: candle-image-task
+    #     client-payload: '{"vm_name": "app-vm-${{ GITHUB.RUN_NUMBER }}"}'
+
+    # - name: Run Candle Image Task
+    #   run: |
+    #     az vm run-command invoke \
+    #       --resource-group githubVM \
+    #       --name "app-vm-${{ GITHUB.RUN_NUMBER }}" \
+    #       --command-id RunShellScript \
+    #       --scripts "ls; cargo new myapp; cd myapp; ls; cargo build --example whisper --release; ls; cd target/release/examples; ls"
+        
+
+    # - name: Deallocate VM
+    #   run: |
+    #     az vm deallocate --resource-group githubVM --name "app-vm-${{ GITHUB.RUN_NUMBER }}"
