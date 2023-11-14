@@ -5,39 +5,30 @@ export HOME=/root
 WORK_DIR="/opt/actions-runner"
 
 chown -R runner $WORK_DIR
-
-# Configure the runner
 su - runner -c "$WORK_DIR/config.sh --unattended --url https://github.com/nogibjj/candle_scott_Azure_vm --token $RUNNER_TOKEN"
-
-# Schedule the runner to start immediately but in the background
 nohup su - runner -c "$WORK_DIR/run.sh" &
 
-# Updating system packages
 apt-get update
+apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq git-lfs curl jq
 
-# Installing necessary dependencies
-apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler jq git-lfs
-
-# Setting up Git LFS
 git lfs install
-
-# Installing Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 export PATH="$HOME/.cargo/bin:$PATH"
 
-# Cloning the necessary repository
 git clone https://github.com/huggingface/candle.git /root/candle
 cd /root/candle
 
-# Building the project
 if cargo build --example whisper --release; then
-  # Binary built, trigger a workflow to create a release and upload the binary
-  sudo -i
-  curl -X POST \
-    -H "Authorization: token $GITHUB_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    "https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/actions/workflows/release.yml/dispatches" \
-    -d '{"ref": "main"}'
+    FILE="/root/candle/target/release/examples/whisper"
+    MIME_TYPE=$(file -b --mime-type "$FILE")
+    TAG="v$(date +%Y%m%d%H%M%S)"
+    RELEASE_NAME="CPU Whisper Binary Release"
+    GITHUB_TOKEN=$(cat /var/lib/cloud/instance/secrets/GITHUB_TOKEN)  # Load token from a secure location
+
+    CREATE_RELEASE_RESPONSE=$(curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" -d "{\"tag_name\": \"$TAG\", \"name\": \"$RELEASE_NAME\"}" "https://api.github.com/repos/nogibjj/candle_scott_Azure_vm/releases")
+    UPLOAD_URL=$(echo $CREATE_RELEASE_RESPONSE | jq -r .upload_url | sed "s/{?name,label}//")
+
+    curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: $MIME_TYPE" --data-binary @"$FILE" "$UPLOAD_URL?name=$(basename "$FILE")"
 else
-  echo "Cargo build failed."
+    echo "Cargo build failed."
 fi
