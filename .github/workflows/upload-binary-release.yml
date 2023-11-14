@@ -17,8 +17,8 @@ jobs:
 
       - name: Create Tag
         run: |
-          git tag $TAG
-          git push origin $TAG
+          git tag ${{ env.TAG }}
+          git push origin ${{ env.TAG }}
 
       - name: Create Release
         id: create_release
@@ -31,12 +31,18 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Download Binary from Storage
+        run: |
+          # Replace the following URL with the actual URL where the binary is stored
+          curl -L -o whisper "/root/candle/target/release/examples"
+          chmod +x whisper
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /root/candle/target/release/examples
+          asset_path: ./whisper
           asset_name: whisper
           asset_content_type: application/octet-stream
