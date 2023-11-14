@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo -i 
 
 # Define a working directory
 WORK_DIR="/opt/actions-runner"
