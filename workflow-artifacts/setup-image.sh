@@ -1,38 +1,77 @@
+# #!/bin/bash
+# #
+# # Setup the runner to have the Azure CLI, Rust, and Candle pre-installed
+# set -e
+# # Define a working directory
+# WORK_DIR="/opt/actions-runner"
+
+# # Update system packages
+# apt-get update
+
+# # Install necessary packages
+# apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler git curl
+
+
+# # Install Rust using rustup
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# # Ensure the cargo/bin directory is in PATH
+# source $HOME/.cargo/env
+
+# # Clone the candle repository
+# git clone https://github.com/huggingface/candle.git /opt/candle
+
+# # Install Azure CLI without using sudo
+# curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+# # Create a folder for the actions runner and download the package
+# mkdir -p $WORK_DIR
+# cd $WORK_DIR
+# curl -O -L https://github.com/actions/runner/releases/download/v2.310.2/actions-runner-linux-x64-2.310.2.tar.gz
+# tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
+
+# # Cleaning up unnecessary files to save space
+# apt-get clean
+# rm -rf /var/lib/apt/lists/*
+
+
+
 #!/bin/bash
 #
-# Setup the runner to have the Azure CLI, Rust, and Candle pre-installed
-set -e
+# Setup the runner to have the Azure CLI pre-installed as well as the Actions
+# Runner
+
 # Define a working directory
 WORK_DIR="/opt/actions-runner"
 
-# Update system packages
-apt-get update
-
-# Install necessary packages
-apt-get install -y build-essential pkg-config libssl-dev protobuf-compiler git curl
-
-
-# Install Rust using rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# Ensure the cargo/bin directory is in PATH
-source $HOME/.cargo/env
-
-# Clone the candle repository
-git clone https://github.com/huggingface/candle.git /opt/candle
-
-# Install Azure CLI without using sudo
+# Install Azure CLI, should not use sudo
 curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-# Create a folder for the actions runner and download the package
-mkdir -p $WORK_DIR
-cd $WORK_DIR
-curl -O -L https://github.com/actions/runner/releases/download/v2.310.2/actions-runner-linux-x64-2.310.2.tar.gz
-tar xzf ./actions-runner-linux-x64-2.310.2.tar.gz
+# Create a folder
+mkdir -p $WORK_DIR && cd $WORK_DIR
 
-# Cleaning up unnecessary files to save space
-apt-get clean
-rm -rf /var/lib/apt/lists/*
+# Download the latest runner package
+curl -O -L https://github.com/actions/runner/releases/download/v2.310.2/actions-runner-linux-x64-2.310.2.tar.gz
+
+# Extract the installer
+tar xzf $WORK_DIR/actions-runner-linux-x64-2.310.2.tar.gz
+
+# # install rust 
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# source $HOME/.cargo/env
+
+# install candle 
+git clone https://github.com/huggingface/candle.git /opt/candle
+
+# # Create a GitHub runner Token
+# TOKEN=$(curl -X POST \
+#             -H "Authorization: token $GITHUB_PAT" \
+#             -H "Accept: application/vnd.github.v3+json" \
+#             https://api.github.com/repos/alfredodeza/azure-spot-runner/actions/runners/registration-token | grep token | cut -d '"' -f 4)
+
+
+# # Configure the runner
+# $WORK_DIR/config.sh --unattended --url https://github.com/alfredodeza/azure-spot-runner --token $TOKEN
 
 
 
